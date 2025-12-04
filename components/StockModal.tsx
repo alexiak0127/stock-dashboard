@@ -19,6 +19,26 @@ type StockData = {
   chartData: ChartPoint[];
 };
 
+type OverviewData = {
+  name: string;
+  description: string;
+  sector: string;
+  industry: string;
+  marketCap: string;
+  peRatio: string;
+  dividendYield: string;
+  eps: string;
+  profitMargin: string;
+  trailingPE: string;
+  forwardPE: string;
+  priceToSalesRatio: string;
+  bookValue: string;
+  fiftyTwoWeekHigh: string;
+  fiftyTwoWeekLow: string;
+  fiftyTwoWeekChange: string;
+  beta: string;
+};
+
 type StockModalProps = {
   ticker: string;
   companyName?: string;
@@ -206,6 +226,7 @@ const ChartContainer = styled.div`
 export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "financials" | "price">("overview");
   const [stockData, setStockData] = useState<StockData | null>(null);
+  const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -214,13 +235,22 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
     async function fetchData() {
       try {
         setError(null);
-        const response = await fetch(`/api/price/${ticker}`);
-        const data = await response.json();
+        const [priceRes, overviewRes] = await Promise.all([
+          fetch(`/api/price/${ticker}`),
+          fetch(`/api/overview/${ticker}`),
+        ]);
         
-        if (data.error) {
-          setError(data.error);
+        const priceData = await priceRes.json();
+        const overviewDataRes = await overviewRes.json();
+        
+        if (priceData.error) {
+          setError(priceData.error);
         } else {
-          setStockData(data);
+          setStockData(priceData);
+        }
+        
+        if (!overviewDataRes.error) {
+          setOverviewData(overviewDataRes);
         }
       } catch {
         setError("Failed to load data");
@@ -242,7 +272,129 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
     }
 
     if (activeTab === "overview") {
-      return null;
+      if (!overviewData) {
+        return <ErrorMessage>Overview data not available</ErrorMessage>;
+      }
+      // the overview page, copy paste style.
+      return (
+        <div className="space-y-6">
+          {overviewData.description !== "N/A" && (
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-2">About</h3>
+              <p className="text-slate-400 leading-relaxed">
+                {overviewData.description}
+              </p>
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-4">
+            {overviewData.sector !== "N/A" && (
+              <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3.5">
+                <div className="text-xs text-slate-400 mb-1">Sector</div>
+                <div className="text-sm font-medium text-white">
+                  {overviewData.sector}
+                </div>
+              </div>
+            )}
+            {overviewData.industry !== "N/A" && (
+              <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3.5">
+                <div className="text-xs text-slate-400 mb-1">Industry</div>
+                <div className="text-sm font-medium text-white">
+                  {overviewData.industry}
+                </div>
+              </div>
+            )}
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-white mb-3">Valuation</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {overviewData.marketCap !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">Market Cap</div>
+                  <div className="text-xs font-medium text-white">
+                    {typeof overviewData.marketCap === "string"
+                      ? (parseFloat(overviewData.marketCap) / 1e9).toFixed(2) + "B": overviewData.marketCap}
+                  </div>
+                </div>
+              )}
+              {overviewData.peRatio !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">P/E Ratio</div>
+                  <div className="text-xs font-medium text-white">
+                    {parseFloat(overviewData.peRatio)}
+                  </div>
+                </div>
+              )}
+              {overviewData.eps !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">EPS</div>
+                  <div className="text-xs font-medium text-white">
+                    ${parseFloat(overviewData.eps)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-white mb-3">Financial Metrics</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {overviewData.dividendYield !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">Dividend Yield</div>
+                  <div className="text-xs font-medium text-white">
+                    {(parseFloat(overviewData.dividendYield) * 100)}%
+                  </div>
+                </div>
+              )}
+              {overviewData.profitMargin !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">Profit Margin</div>
+                  <div className="text-xs font-medium text-white">
+                    {(parseFloat(overviewData.profitMargin) * 100)}%
+                  </div>
+                </div>
+              )}
+              {overviewData.beta !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">Beta</div>
+                  <div className="text-xs font-medium text-white">
+                    {parseFloat(overviewData.beta)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-white mb-3">Forward Metrics</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {overviewData.forwardPE !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">Forward P/E</div>
+                  <div className="text-xs font-medium text-white">
+                    {parseFloat(overviewData.forwardPE)}
+                  </div>
+                </div>
+              )}
+              {overviewData.priceToSalesRatio !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">P/S Ratio</div>
+                  <div className="text-xs font-medium text-white">
+                    {parseFloat(overviewData.priceToSalesRatio).toFixed(2)}
+                  </div>
+                </div>
+              )}
+              {overviewData.bookValue !== "N/A" && (
+                <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
+                  <div className="text-xs text-slate-400 mb-1">Book Value</div>
+                  <div className="text-xs font-medium text-white">
+                    ${parseFloat(overviewData.bookValue).toFixed(2)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
     }
 
     if (activeTab === "financials") {
