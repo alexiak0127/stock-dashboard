@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
+import { StockModal } from "@/components/StockModal";
 
 type SearchResult = {
   symbol: string;
@@ -114,6 +115,13 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #d0e3cc;
+    transform: translateY(-2px);
+  }
 `;
 
 const Symbol = styled.span`
@@ -151,6 +159,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<{ ticker: string; name: string } | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -207,7 +216,7 @@ export default function SearchPage() {
             <ResultsTitle>Results</ResultsTitle>
             <ResultsGrid>
               {results.map((r) => (
-                <Card key={r.symbol}>
+                <Card key={r.symbol} onClick={() => setSelectedStock({ ticker: r.symbol, name: r.name })}>
                   <Symbol>{r.symbol}</Symbol>
                   <Company>{r.name}</Company>
                   <Meta>
@@ -222,6 +231,13 @@ export default function SearchPage() {
           </>
         )}
       </ResultsWrapper>
+
+      <StockModal
+        ticker={selectedStock?.ticker || ""}
+        companyName={selectedStock?.name}
+        isOpen={!!selectedStock}
+        onClose={() => setSelectedStock(null)}
+      />
     </PageWrapper>
   );
 }
