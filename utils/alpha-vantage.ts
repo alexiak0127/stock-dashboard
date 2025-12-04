@@ -12,7 +12,45 @@ async function fetchData(functionName: string, symbol: string) {
 
   for (const apiKey of API_KEYS) {
     try {
-      const url = BASE_URL + "?function=" + functionName + "&symbol=" + symbol.toUpperCase() + "&apikey=" + apiKey;
+      const url =
+        BASE_URL +
+        "?function=" +
+        functionName +
+        "&symbol=" +
+        symbol.toUpperCase() +
+        "&apikey=" +
+        apiKey;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data["Error Message"] || data["Note"]) {
+        continue;
+      }
+
+      return data;
+    } catch (error) {
+      continue;
+    }
+  }
+
+  throw new Error("All API keys failed");
+}
+
+async function fetchSearch(keywords: string) {
+  if (API_KEYS.length === 0) {
+    throw new Error("ALPHA_VANTAGE_API_KEY is not set");
+  }
+
+  for (const apiKey of API_KEYS) {
+    try {
+      const url =
+        BASE_URL +
+        "?function=SYMBOL_SEARCH&keywords=" +
+        encodeURIComponent(keywords) +
+        "&apikey=" +
+        apiKey;
+
       const response = await fetch(url);
       const data = await response.json();
 
@@ -57,4 +95,8 @@ export async function getAllFinancialStatements(ticker: string) {
   ]);
 
   return { incomeStatement, balanceSheet, cashFlow };
+}
+
+export async function searchSymbols(keywords: string) {
+  return fetchSearch(keywords);
 }
