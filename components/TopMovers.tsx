@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import styled from "styled-components";
+import { StockModal } from "@/components/StockModal";
 
 export type TopMover = {
   ticker: string;
@@ -42,6 +44,13 @@ const Card = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #d0e3cc;
+    transform: translateY(-2px);
+  }
 `;
 
 const Ticker = styled.span`
@@ -50,14 +59,16 @@ const Ticker = styled.span`
   letter-spacing: 0.04em;
 `;
 
-const Change = styled.span<{ positive: boolean }>`
+const Change = styled.span<{ $positive: boolean }>`
   margin-top: 0.75rem;
   font-size: 1.1rem;
   font-weight: 600;
-  color: ${({ positive }) => (positive ? "#86efac" : "#fca5a5")};
+  color: ${({ $positive }) => ($positive ? "#86efac" : "#fca5a5")};
 `;
 
 export function TopMovers({ movers }: Props) {
+  const [selectedStock, setSelectedStock] = useState<string | null>(null);
+
   return (
     <Section>
       <Title>Top movers</Title>
@@ -66,13 +77,19 @@ export function TopMovers({ movers }: Props) {
           const isPositive = m.change.trim().startsWith("+");
 
           return (
-            <Card key={`${m.ticker}-${idx}`}>
+            <Card key={`${m.ticker}-${idx}`} onClick={() => setSelectedStock(m.ticker)}>
               <Ticker>{m.ticker}</Ticker>
-              <Change positive={isPositive}>{m.change}</Change>
+              <Change $positive={isPositive}>{m.change}</Change>
             </Card>
           );
         })}
       </Row>
+
+      <StockModal
+        ticker={selectedStock || ""}
+        isOpen={!!selectedStock}
+        onClose={() => setSelectedStock(null)}
+      />
     </Section>
   );
 }
