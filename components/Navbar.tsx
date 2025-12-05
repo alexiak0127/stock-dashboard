@@ -70,7 +70,6 @@ export function Navbar() {
           >Sign In</NavLink>
           <NavLink href="/search">Search</NavLink>
           <NavLink href="/watchlist">Watchlist</NavLink>
-          <NavLink href="/about">About</NavLink>
         </NavLinks>
       </Inner>
     </Header>
