@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { IncomeStatement } from "./IncomeStatement";
 
 type ChartPoint = {
   date: string;
@@ -246,7 +247,7 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
     }
 
     if (activeTab === "financials") {
-      return null;
+      return <IncomeStatement ticker={ticker} />;
     }
 
     // Price tab
