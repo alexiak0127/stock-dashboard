@@ -1,5 +1,5 @@
 "use server";
-
+//Charles Yao
 import Image from "next/image";
 import { auth } from "@/auth";
 import { LogOutButton } from "@/components/logoutButton";
@@ -11,12 +11,12 @@ export default async function UserProfilePage() {
   if (!session?.user) {
     redirect("/login");
   }
-
+//added color shifting to background similar to fit the main page
   return (
-    <main className="min-h-screen bg-slate-900 text-white flex flex-col">
+    <main className="h-screen bg-slate-900 text-white flex flex-col">
       <div className="flex items-center justify-center flex-1">
-        <div className="flex flex-col gap-6 items-center justify-center w-[90%] max-w-lg p-12 bg-gradient-to-b from-white/10 to-slate-900/10 rounded-3xl shadow-2xl border border-white/10">
-          <h1 className="text-4xl font-semibold tracking-tight">You are signed in!</h1>
+        <div className="items-center justify-center w-[90%] max-w-lg p-12 bg-gradient-to-b from-white/10 to-slate-900/10 rounded-3xl shadow-2xl border border-white/10 flex flex-col gap-6 ">
+          <h1 className="font-semibold tracking-tight text-4xl ">You are signed in!</h1>
           {session.user.image && (
             <Image 
               src={session.user.image} 

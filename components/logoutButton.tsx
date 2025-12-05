@@ -1,5 +1,5 @@
 "use client";
-
+//styled logout button by Charles Yao
 import {logOut} from "@/lib/auth";
 
 export const LogOutButton=()=>{

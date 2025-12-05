@@ -261,7 +261,7 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
   }, [ticker, isOpen]);
 
   if (!isOpen) return null;
-
+  // Charles Yao for the renderContent part, uses similar logic as the team
   const renderContent = () => {
     if (error) {
       return <ErrorMessage>Error: {error}</ErrorMessage>;
@@ -363,7 +363,6 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
               )}
             </div>
           </div>
-
           <div>
             <h3 className="text-sm font-semibold text-white mb-3">Forward Metrics</h3>
             <div className="grid grid-cols-3 gap-2">
