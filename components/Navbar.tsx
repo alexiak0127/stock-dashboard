@@ -66,6 +66,8 @@ export function Navbar() {
           <Title>Market Dashboard</Title>
         </Logo>
         <NavLinks>
+          <NavLink href="/login" className="bg-blue-900 text-black py-2 px-5 rounded-lg font-semibold no-underline "
+          >Sign In</NavLink>
           <NavLink href="/search">Search</NavLink>
           <NavLink href="/watchlist">Watchlist</NavLink>
           <NavLink href="/about">About</NavLink>

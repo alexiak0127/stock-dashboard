@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@types/styled-components": "^5.1.36",
-    "next": "16.0.3",
+    "auth": "^1.2.3",
+    "next": "^16.0.7",
+    "next-auth": "^5.0.0-beta.30",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "styled-components": "^6.1.19"
