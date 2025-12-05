@@ -23,7 +23,7 @@ export default async function UserProfilePage() {
               alt={session.user.name ?? "Avatar"} 
               width={80} 
               height={80}
-              className="rounded-full border-4 border-lime-200 shadow-lg"
+              className="rounded-full border-3 border-lime-100"
             />
           )}
           <div className="text-center space-y-2">
