@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react";
 import styled from "styled-components";
 import { StockModal } from "@/components/StockModal";
 
-type SearchResult = {
+export type SearchResult = {
   symbol: string;
   name: string;
   region: string;
@@ -13,14 +13,14 @@ type SearchResult = {
   price: number | null;
 };
 
-const PageWrapper = styled.main`
+export const PageWrapper = styled.main`
   position: relative;
   max-width: 960px;
   margin: 0 auto;
   padding: 4rem 2rem;
 `;
 
-const CloseButton = styled.button`
+export const CloseButton = styled.button`
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -35,26 +35,26 @@ const CloseButton = styled.button`
   }
 `;
 
-const Title = styled.h1`
+export const Title = styled.h1`
   font-size: 2.2rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
 `;
 
-const Subtitle = styled.p`
+export const Subtitle = styled.p`
   color: #e5e7eb;
   margin-bottom: 2.5rem;
   font-size: 1.05rem;
 `;
 
-const SearchForm = styled.form`
+export const SearchForm = styled.form`
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2rem;
 `;
 
-const SearchInput = styled.input`
+export const SearchInput = styled.input`
   flex: 1;
   min-width: 220px;
   padding: 0.75rem 1rem;
@@ -70,7 +70,7 @@ const SearchInput = styled.input`
   }
 `;
 
-const SearchButton = styled.button`
+export const SearchButton = styled.button`
   padding: 0.75rem 1.75rem;
   border-radius: 10px;
   border: none;
@@ -89,23 +89,23 @@ const SearchButton = styled.button`
   }
 `;
 
-const ResultsWrapper = styled.section`
+export const ResultsWrapper = styled.section`
   margin-top: 1.5rem;
 `;
 
-const ResultsTitle = styled.h2`
+export const ResultsTitle = styled.h2`
   font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 1.25rem;
 `;
 
-const ResultsGrid = styled.div`
+export const ResultsGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
 `;
 
-const Card = styled.div`
+export const Card = styled.div`
   width: 100%;
   max-width: 18rem;
   border-radius: 14px;
@@ -124,30 +124,30 @@ const Card = styled.div`
   }
 `;
 
-const Symbol = styled.span`
+export const Symbol = styled.span`
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: 0.05em;
 `;
 
-const Company = styled.span`
+export const Company = styled.span`
   font-size: 1rem;
   color: #e5e7eb;
 `;
 
-const Meta = styled.span`
+export const Meta = styled.span`
   font-size: 0.9rem;
   color: #9ca3af;
 `;
 
-const Price = styled.span`
+export const Price = styled.span`
   margin-top: 0.3rem;
   font-size: 1.2rem;
   font-weight: 600;
   color: #d0e3cc;
 `;
 
-const Message = styled.p`
+export const Message = styled.p`
   margin-top: 0.75rem;
   color: #9ca3af;
 `;

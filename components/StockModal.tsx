@@ -82,6 +82,12 @@ const Header = styled.div`
   align-items: center;
 `;
 
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
 const TitleSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -98,6 +104,25 @@ const Ticker = styled.h2`
 const CompanyName = styled.span`
   font-size: 0.95rem;
   color: #9ca3af;
+`;
+
+const WishlistButton = styled.button`
+  background: transparent;
+  border: 1px solid #d0e3cc;
+  color: #d0e3cc;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &.added {
+    background-color: #d0e3cc;
+    color: #020824;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -229,6 +254,23 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
   const [stockData, setStockData] = useState<StockData | null>(null);
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  // Check if stock is already in wishlist on mount
+  useEffect(() => {
+    async function checkWishlist() {
+      try {
+        const res = await fetch("/api/wishlist");
+        if (res.ok) {
+          const { wishlist } = await res.json();
+          setIsInWishlist(wishlist.some((item: { ticker: string }) => item.ticker === ticker));
+        }
+      } catch (err) {
+        console.error("Failed to check wishlist:", err);
+      }
+    }
+    checkWishlist();
+  }, [ticker]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -260,6 +302,38 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
 
     fetchData();
   }, [ticker, isOpen]);
+
+  // Function to toggle stock in wishlist
+  const toggleWishlist = async () => {
+    try {
+      if (isInWishlist) {
+        // Remove from wishlist
+        const res = await fetch(`/api/wishlist?ticker=${ticker}`, {
+          method: "DELETE",
+        });
+        
+        if (res.ok) {
+          setIsInWishlist(false);
+        }
+      } else {
+        // Add to wishlist
+        const res = await fetch("/api/wishlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ticker: ticker,
+            name: companyName || ticker,
+          }),
+        });
+        
+        if (res.ok) {
+          setIsInWishlist(true);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to toggle wishlist:", err);
+    }
+  };
 
   if (!isOpen) return null;
   // Charles Yao for the renderContent part, uses similar logic as the team
@@ -483,7 +557,15 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
             <Ticker>{ticker}</Ticker>
             {companyName && <CompanyName>{companyName}</CompanyName>}
           </TitleSection>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <HeaderActions>
+            <WishlistButton 
+              onClick={toggleWishlist}
+              className={isInWishlist ? "added" : ""}
+            >
+              {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
+            </WishlistButton>
+            <CloseButton onClick={onClose}>×</CloseButton>
+          </HeaderActions>
         </Header>
 
         <TabsContainer>

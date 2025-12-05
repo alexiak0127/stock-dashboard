@@ -1,6 +1,7 @@
 "use server";
 //Charles Yao
 import Image from "next/image";
+import Link from "next/link";
 import { auth } from "@/auth";
 import { LogOutButton } from "@/components/logoutButton";
 import { redirect } from "next/navigation";
@@ -30,8 +31,13 @@ export default async function UserProfilePage() {
             <p className="text-lg text-gray-300">Username: <span className="font-semibold">{session.user.name}</span></p>
             <p className="text-lg text-gray-300">Email: <span className="font-semibold">{session.user.email}</span></p>
           </div>
-          <div className="mt-4">
-            <div><p className="text-gray-400 mb-4">ADD favorite list here</p></div>
+          <div className="mt-4 flex flex-col gap-3 items-center">
+            <Link 
+              href={`/user/${session.user.id || session.user.email}/favorites`}
+              className="bg-lime-200 text-slate-900 py-3 px-8 rounded-lg font-semibold hover:brightness-105 transition-all"
+            >
+              View My Wishlist
+            </Link>
             <LogOutButton />
           </div>
         </div>

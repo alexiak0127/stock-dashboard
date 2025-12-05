@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 import styled from "styled-components";
 
 const Header = styled.header`
@@ -57,19 +59,46 @@ const NavLink = styled(Link)`
   }
 `;
 
+const UserAvatar = styled(Image)`
+  border-radius: 50%;
+  border: 2px solid #d0e3cc;
+  cursor: pointer;
+`;
+
 export function Navbar() {
+  const { data: session } = useSession();
+
   return (
     <Header>
       <Inner>
-        <Logo>
-          <LogoImage src="/logo.png" alt="Market Dashboard logo" />
-          <Title>Market Dashboard</Title>
-        </Logo>
+        <Link href="/">
+          <Logo>
+            <LogoImage src="/logo.png" alt="Market Dashboard logo" />
+            <Title>Market Dashboard</Title>
+          </Logo>
+        </Link>
         <NavLinks>
-          <NavLink href="/login" className="bg-blue-900 text-black py-2 px-5 rounded-lg font-semibold no-underline "
-          >Sign In</NavLink>
+          {session?.user ? (
+            <Link href={`/user/${session.user.id || session.user.email}`}>
+              <UserAvatar
+                src={session.user.image || "/default-avatar.png"}
+                alt={session.user.name || "User"}
+                width={40}
+                height={40}
+              />
+            </Link>
+          ) : (
+            <Link 
+              href="/login" 
+              className="bg-white text-black py-2 px-5 rounded-lg font-semibold no-underline hover:brightness-105 transition-all"
+            >Sign In</Link>
+          )}
           <NavLink href="/search">Search</NavLink>
-          <NavLink href="/watchlist">Watchlist</NavLink>
+          
+          {/* Only show Favorites link when user is logged in */}
+          {session?.user && (
+            <NavLink href={`/user/${session.user.id || session.user.email}/favorites`}>Favorites</NavLink>
+          )}
         </NavLinks>
       </Inner>
     </Header>
