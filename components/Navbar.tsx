@@ -95,7 +95,7 @@ export function Navbar() {
           )}
           <NavLink href="/search">Search</NavLink>
           
-          {/* Only show Favorites link when user is logged in */}
+          {/*only show Favorites link when user is logged in, cHARLES*/}
           {session?.user && (
             <NavLink href={`/user/${session.user.id || session.user.email}/favorites`}>Favorites</NavLink>
           )}

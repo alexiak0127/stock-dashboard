@@ -1,5 +1,5 @@
 "use client";
-//Styled button for github login, by Charles
+//Styled button for github login, with homemade login(), by Charles
 import {logIn} from "@/lib/auth";
 import Image from "next/image";
 import githubLogo from "@/public/github.png";

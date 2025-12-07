@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@/components/Navbar"
 import {Navbar} from "@/components/Navbar";
-import { Providers } from "@/components/Providers";
+import { Providers } from "@/components/Providers"; //wrape with provider so the nav could render from session, Charles.
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

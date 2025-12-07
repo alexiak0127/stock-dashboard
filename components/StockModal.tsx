@@ -108,8 +108,8 @@ const CompanyName = styled.span`
 
 const WishlistButton = styled.button`
   background: transparent;
-  border: 1px solid #d0e3cc;
-  color: #d0e3cc;
+  border: 1px solid lightgreen;
+  color: lightgreen;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -120,8 +120,8 @@ const WishlistButton = styled.button`
   gap: 0.5rem;
 
   &.added {
-    background-color: #d0e3cc;
-    color: #020824;
+    background-color: lightgreen;
+    color: black;
   }
 `;
 
