@@ -1,5 +1,5 @@
 "use client";
-
+//Done collectively by the group
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IncomeStatement } from "./IncomeStatement";
@@ -43,6 +43,8 @@ type OverviewData = {
 type StockModalProps = {
   ticker: string;
   companyName?: string;
+  region?: string;
+  currency?: string;
   isOpen: boolean;
   onClose: () => void;
 };
@@ -82,6 +84,12 @@ const Header = styled.div`
   align-items: center;
 `;
 
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
 const TitleSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -98,6 +106,25 @@ const Ticker = styled.h2`
 const CompanyName = styled.span`
   font-size: 0.95rem;
   color: #9ca3af;
+`;
+
+const WishlistButton = styled.button`
+  background: transparent;
+  border: 2px solid lightgreen;
+  color: lightgreen;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &.added {
+    background-color: lightgreen;
+    color: black;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -224,12 +251,29 @@ const ChartContainer = styled.div`
   box-sizing: border-box;
 `;
 
-export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalProps) {
+export function StockModal({ ticker, companyName, region, currency, isOpen, onClose }: StockModalProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "financials" | "price">("overview");
   const [stockData, setStockData] = useState<StockData | null>(null);
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isInWishlist, setIsInWishlist] = useState(false);
 
+  //Start of Charles check wishlist not to duplicate item
+  useEffect(() => {
+    async function checkWishlist() {
+      try {
+        const res = await fetch("/api/wishlist");
+        if (res.ok) {
+          const { wishlist } = await res.json();
+          setIsInWishlist(wishlist.some((item: { ticker: string }) => item.ticker === ticker));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    checkWishlist();
+  }, [ticker]);
+  // end of charles for wishlist part functionality
   useEffect(() => {
     if (!isOpen) return;
 
@@ -240,7 +284,6 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
           fetch(`/api/price/${ticker}`),
           fetch(`/api/overview/${ticker}`),
         ]);
-        
         const priceData = await priceRes.json();
         const overviewDataRes = await overviewRes.json();
         
@@ -249,7 +292,7 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
         } else {
           setStockData(priceData);
         }
-        
+    
         if (!overviewDataRes.error) {
           setOverviewData(overviewDataRes);
         }
@@ -261,8 +304,42 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
     fetchData();
   }, [ticker, isOpen]);
 
-  if (!isOpen) return null;
+  // start Charles Yao Function to add/remove stock in wishlist
+  const toggleWishlist = async () => {
+    try {
+      if (isInWishlist) {
+        //remove from wishlist
+        const res = await fetch(`/api/wishlist?ticker=${ticker}`, {
+          method: "DELETE",
+        });
+        
+        if (res.ok) {
+          setIsInWishlist(false);
+        }
+      } else {
+        // add to wishlist
+        const res = await fetch("/api/wishlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ticker: ticker,
+            name: companyName || ticker,
+            region: region || "N/A",
+            currency: currency || "USD",
+          }),
+        });
+        
+        if (res.ok) {
+          setIsInWishlist(true);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to toggle wishlist:", err);
+    }
+  };
 
+  if (!isOpen) return null;
+  // charles yao the overview part, uses similar logic as the team
   const renderContent = () => {
     if (error) {
       return <ErrorMessage>Error: {error}</ErrorMessage>;
@@ -364,7 +441,6 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
               )}
             </div>
           </div>
-
           <div>
             <h3 className="text-sm font-semibold text-white mb-3">Forward Metrics</h3>
             <div className="grid grid-cols-3 gap-2">
@@ -396,6 +472,7 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
           </div>
         </div>
       );
+      //end of charles on this part
     }
 
     if (activeTab === "financials") {
@@ -484,7 +561,15 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
             <Ticker>{ticker}</Ticker>
             {companyName && <CompanyName>{companyName}</CompanyName>}
           </TitleSection>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <HeaderActions>
+            <WishlistButton 
+              onClick={toggleWishlist}
+              className={isInWishlist ? "added" : ""}
+            >
+              {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
+            </WishlistButton>
+            <CloseButton onClick={onClose}>×</CloseButton>
+          </HeaderActions>
         </Header>
 
         <TabsContainer>

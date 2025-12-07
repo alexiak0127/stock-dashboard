@@ -36,7 +36,7 @@ const topMovers = [
 export default function HomePage() {
   return (
     <PageWrapper>
-      <Navbar />
+
       <ContentWrapper>
         <Hero />
         <TopMovers movers={topMovers} />
