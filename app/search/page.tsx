@@ -159,7 +159,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<{ ticker: string; name: string } | null>(null);
+  const [selectedStock, setSelectedStock] = useState<{ ticker: string; name: string; region?: string; currency?: string } | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -216,7 +216,7 @@ export default function SearchPage() {
             <ResultsTitle>Results</ResultsTitle>
             <ResultsGrid>
               {results.map((r) => (
-                <Card key={r.symbol} onClick={() => setSelectedStock({ ticker: r.symbol, name: r.name })}>
+                <Card key={r.symbol} onClick={() => setSelectedStock({ ticker: r.symbol, name: r.name, region: r.region, currency: r.currency })}>
                   <Symbol>{r.symbol}</Symbol>
                   <Company>{r.name}</Company>
                   <Meta>
@@ -235,6 +235,8 @@ export default function SearchPage() {
       <StockModal
         ticker={selectedStock?.ticker || ""}
         companyName={selectedStock?.name}
+        region={selectedStock?.region}
+        currency={selectedStock?.currency}
         isOpen={!!selectedStock}
         onClose={() => setSelectedStock(null)}
       />

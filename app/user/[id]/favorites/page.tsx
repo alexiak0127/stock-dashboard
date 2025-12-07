@@ -23,7 +23,7 @@ import {
 export default function FavoritesPage() {
   const router = useRouter();//router is just for the close button, still a copy cat from the search page.
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [selectedStock, setSelectedStock] = useState<{ ticker: string; name: string } | null>(null);
+  const [selectedStock, setSelectedStock] = useState<{ ticker: string; name: string; region?: string; currency?: string } | null>(null);
 
     // THE USE EFFECT, is to take data from the mongodb and fetch API CALLS to get the data! its not static like others normal projects!
   useEffect(() => {
@@ -36,15 +36,15 @@ export default function FavoritesPage() {
       
       //fetch data same as the search page for saved stocks :)
       const stocksWithData = await Promise.all(
-        wishlist.map(async (item: { ticker: string; name: string }) => {
+        wishlist.map(async (item: { ticker: string; name: string; region: string; currency: string }) => {
           const priceRes = await fetch(`/api/price/${item.ticker}`);
           const data = await priceRes.json();
           return {
             symbol: item.ticker,
             name: item.name,
-            region: data.region,
-            currency: data.currency,
-            price: data.price
+            region: item.region || "N/A",
+            currency: item.currency || "USD",
+            price: data.latestClose || null
           };
         })
       );
@@ -70,7 +70,7 @@ export default function FavoritesPage() {
             <ResultsTitle>Your Stocks</ResultsTitle>
             <ResultsGrid>
               {results.map((r) => (
-                <Card key={r.symbol} onClick={() => setSelectedStock({ ticker: r.symbol, name: r.name })}>
+                <Card key={r.symbol} onClick={() => setSelectedStock({ ticker: r.symbol, name: r.name, region: r.region, currency: r.currency })}>
                   <Symbol>{r.symbol}</Symbol>
                   <Company>{r.name}</Company>
                   <Meta>
@@ -89,6 +89,8 @@ export default function FavoritesPage() {
       <StockModal
         ticker={selectedStock?.ticker || ""}
         companyName={selectedStock?.name}
+        region={selectedStock?.region}
+        currency={selectedStock?.currency}
         isOpen={!!selectedStock}
         onClose={() => setSelectedStock(null)}
       />

@@ -1,5 +1,5 @@
 "use client";
-
+//Done collectively by the group
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IncomeStatement } from "./IncomeStatement";
@@ -43,6 +43,8 @@ type OverviewData = {
 type StockModalProps = {
   ticker: string;
   companyName?: string;
+  region?: string;
+  currency?: string;
   isOpen: boolean;
   onClose: () => void;
 };
@@ -108,7 +110,7 @@ const CompanyName = styled.span`
 
 const WishlistButton = styled.button`
   background: transparent;
-  border: 1px solid lightgreen;
+  border: 2px solid lightgreen;
   color: lightgreen;
   font-size: 0.9rem;
   font-weight: 600;
@@ -249,14 +251,14 @@ const ChartContainer = styled.div`
   box-sizing: border-box;
 `;
 
-export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalProps) {
+export function StockModal({ ticker, companyName, region, currency, isOpen, onClose }: StockModalProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "financials" | "price">("overview");
   const [stockData, setStockData] = useState<StockData | null>(null);
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isInWishlist, setIsInWishlist] = useState(false);
 
-  // Check if stock is already in wishlist on mount
+  //Start of Charles check wishlist not to duplicate item
   useEffect(() => {
     async function checkWishlist() {
       try {
@@ -266,12 +268,12 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
           setIsInWishlist(wishlist.some((item: { ticker: string }) => item.ticker === ticker));
         }
       } catch (err) {
-        console.error("Failed to check wishlist:", err);
+        console.error(err);
       }
     }
     checkWishlist();
   }, [ticker]);
-
+  // end of charles for wishlist part functionality
   useEffect(() => {
     if (!isOpen) return;
 
@@ -282,7 +284,6 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
           fetch(`/api/price/${ticker}`),
           fetch(`/api/overview/${ticker}`),
         ]);
-        
         const priceData = await priceRes.json();
         const overviewDataRes = await overviewRes.json();
         
@@ -291,7 +292,7 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
         } else {
           setStockData(priceData);
         }
-        
+    
         if (!overviewDataRes.error) {
           setOverviewData(overviewDataRes);
         }
@@ -303,11 +304,11 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
     fetchData();
   }, [ticker, isOpen]);
 
-  // Function to toggle stock in wishlist
+  // start Charles Yao Function to add/remove stock in wishlist
   const toggleWishlist = async () => {
     try {
       if (isInWishlist) {
-        // Remove from wishlist
+        //remove from wishlist
         const res = await fetch(`/api/wishlist?ticker=${ticker}`, {
           method: "DELETE",
         });
@@ -316,13 +317,15 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
           setIsInWishlist(false);
         }
       } else {
-        // Add to wishlist
+        // add to wishlist
         const res = await fetch("/api/wishlist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ticker: ticker,
             name: companyName || ticker,
+            region: region || "N/A",
+            currency: currency || "USD",
           }),
         });
         
@@ -336,7 +339,7 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
   };
 
   if (!isOpen) return null;
-  // Charles Yao for the renderContent part, uses similar logic as the team
+  // charles yao the overview part, uses similar logic as the team
   const renderContent = () => {
     if (error) {
       return <ErrorMessage>Error: {error}</ErrorMessage>;
@@ -469,6 +472,7 @@ export function StockModal({ ticker, companyName, isOpen, onClose }: StockModalP
           </div>
         </div>
       );
+      //end of charles on this part
     }
 
     if (activeTab === "financials") {
