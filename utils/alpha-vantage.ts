@@ -1,3 +1,4 @@
+// Raymond Code Block Start
 const apiKeyEnv = process.env.ALPHA_VANTAGE_API_KEY;
 let API_KEYS: string[] = [];
 if (apiKeyEnv) {
@@ -100,3 +101,4 @@ export async function getAllFinancialStatements(ticker: string) {
 export async function searchSymbols(keywords: string) {
   return fetchSearch(keywords);
 }
+// Raymond Code Block End
