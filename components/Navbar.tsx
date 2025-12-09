@@ -114,12 +114,6 @@ export function Navbar() {
           {session?.user && (
             <NavLink href={`/user/${session.user.id || session.user.email}/favorites`}>Favorites</NavLink>
           )}
-          <NavLink href="/search">Search</NavLink>
-          
-          {/* only show Favorites link when user is logged in - Charles*/}
-          {session?.user && (
-            <NavLink href={`/user/${session.user.id || session.user.email}/favorites`}>Favorites</NavLink>
-          )}
         </NavLinks>
       </Inner>
     </Header>
