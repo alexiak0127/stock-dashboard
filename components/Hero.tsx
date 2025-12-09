@@ -1,8 +1,10 @@
+// Hero Component by Alexia
 "use client";
 
 import Link from "next/link";
 import styled from "styled-components";
 
+// Main hero card container
 const HeroCard = styled.section`
     width: 100%;
     text-align: center;
@@ -21,6 +23,7 @@ const HeroCard = styled.section`
     }
 `;
 
+// Main heading
 const Heading = styled.h1`
     font-size: 2.5rem;
     font-weight: 600;
@@ -31,6 +34,7 @@ const Heading = styled.h1`
     }
 `;
 
+// underline beneath heading
 const Underline = styled.div`
   margin: 2rem auto 0;
   width: 96px;
@@ -39,6 +43,7 @@ const Underline = styled.div`
   background-color: #D0E3CC;
 `;
 
+// Subheading text
 const Subtext = styled.p`
   margin: 2.5rem auto ;
   max-width: 34rem;
@@ -50,6 +55,7 @@ const Subtext = styled.p`
   }
 `;
 
+// Container for CTA buttons
 const ButtonRow = styled.div`
   margin-top: 3rem;
   display: flex;
@@ -58,6 +64,7 @@ const ButtonRow = styled.div`
   gap: 1.5rem;
 `;
 
+// Primary CTA button 
 const PrimaryButton = styled(Link)`
   padding: 0.75rem 2.5rem;
   display: inline-flex;
@@ -78,6 +85,7 @@ const PrimaryButton = styled(Link)`
   }
 `;
 
+// Secondary CTA button
 const SecondaryButton = styled(Link)`
   padding: 0.75rem 2.5rem;
   display: inline-flex;

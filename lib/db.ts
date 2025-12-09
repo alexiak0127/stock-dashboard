@@ -1,3 +1,5 @@
+// MongoDB Connection by Alexia
+
 import { MongoClient, Db, Collection } from "mongodb";
 
 const MONGO_URI = process.env.MONGO_URI as string;
@@ -12,6 +14,7 @@ let client: MongoClient | null = null;
 let db: Db | null = null;
 
 async function connect(): Promise<Db> {
+  // Only create if doesn't exist
   if (!client) {
     client = new MongoClient(MONGO_URI);
     await client.connect();
@@ -22,6 +25,7 @@ async function connect(): Promise<Db> {
 export default async function getCollection(
   collectionName: string,
 ): Promise<Collection> {
+  // Connect to db if not connected
   if (!db) {
     db = await connect();
   }

@@ -1,4 +1,6 @@
 "use client";
+// Top Movers component by Alexia Kim
+// Shows clickable cards that open detailed stock modal on click
 
 import { useState } from "react";
 import styled from "styled-components";
@@ -6,7 +8,7 @@ import { StockModal } from "@/components/StockModal";
 
 export type TopMover = {
   ticker: string;
-  change: string;
+  change: string; // Formatted with sign and percentage
 };
 
 type Props = {
@@ -67,6 +69,7 @@ const Change = styled.span<{ $positive: boolean }>`
 `;
 
 export function TopMovers({ movers }: Props) {
+  // Track which stock ticker is selected to show in modal
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
 
   return (
@@ -74,6 +77,7 @@ export function TopMovers({ movers }: Props) {
       <Title>Top movers</Title>
       <Row>
         {movers.map((m, idx) => {
+          // Determine color based on whether change is positive or negative
           const isPositive = m.change.trim().startsWith("+");
 
           return (
@@ -85,6 +89,7 @@ export function TopMovers({ movers }: Props) {
         })}
       </Row>
 
+      {/* Modal to show detailed stock information when a card is clicked */}
       <StockModal
         ticker={selectedStock || ""}
         isOpen={!!selectedStock}
