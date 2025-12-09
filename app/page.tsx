@@ -1,3 +1,10 @@
+/**
+ * HomePage by Alexia
+ * 
+ * This is the main entry point of the stock market dashboard application.
+ * Displays a hero section with search functionality, view watchlist functionality, and top market movers.
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -35,10 +42,10 @@ const fallbackMovers: TopMover[] = [
 ];
 
 export default function HomePage() {
-  // State to store top movers data fetched from API
+  // store top movers data fetched from API
   const [movers, setMovers] = useState<TopMover[]>(fallbackMovers);
 
-  // Fetch top movers data when component mounts
+  // Fetch top movers data 
   useEffect(() => {
     async function fetchTopMovers() {
       try {
