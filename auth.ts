@@ -11,10 +11,21 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     // MongoDB adapter stores user data, sessions, and accounts
     // Uses clientPromise from lib/mongodb.ts for database connection
     adapter: MongoDBAdapter(clientPromise),
-    
+
     // OAuth providers for user authentication
     providers: [
         GitHub,
         Google
     ],
+
+    // Callbacks to customize session and JWT behavior
+    callbacks: {
+        // Add user id to the session object
+        async session({ session, user }) {
+            if (session.user) {
+                session.user.id = user.id;
+            }
+            return session;
+        },
+    },
 })

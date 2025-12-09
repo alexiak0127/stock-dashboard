@@ -6,11 +6,22 @@ import { auth } from "@/auth";
 import { LogOutButton } from "@/components/logoutButton";
 import { redirect } from "next/navigation";
 
-export default async function UserProfilePage() {
+export default async function UserProfilePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const session = await auth();
-  
+
   if (!session?.user) {
     redirect("/login");
+  }
+
+  // Ensure the URL parameter matches the logged-in user's ID
+  const { id } = await params;
+  if (id !== session.user.id) {
+    // Redirect to the correct user profile URL
+    redirect(`/user/${session.user.id}`);
   }
 //added color shifting to background similar to fit the main page
   return (
@@ -32,8 +43,8 @@ export default async function UserProfilePage() {
             <p className="text-lg text-gray-300">Email: <span className="font-semibold">{session.user.email}</span></p>
           </div>
           <div className="mt-4 flex flex-col gap-3 items-center">
-            <Link 
-              href={`/user/${session.user.id || session.user.email}/favorites`}
+            <Link
+              href={`/user/${session.user.id}/favorites`}
               className="bg-lime-200 text-slate-900 py-3 px-8 rounded-lg font-semibold hover:brightness-105 transition-all"
             >
               View My Wishlist
