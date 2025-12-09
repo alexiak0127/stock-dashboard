@@ -278,31 +278,27 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
   // Track any errors that occur during data fetching
   const [error, setError] = useState<string | null>(null);
-  // Track loading state
-  const [isLoading, setIsLoading] = useState(false);
   // Track whether this stock is in the user's wishlist
   const [isInWishlist, setIsInWishlist] = useState(false);
   // Track the currently hovered point on the price chart for tooltip display
   const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; price: number; date: string } | null>(null);
 
-  // Start of Charles - Check if current stock is already in user's wishlist to prevent duplicates
-  // This useEffect runs whenever the ticker changes to update the wishlist button state
+  // Start of Charles duplicate wishlist check
+  // Runs whenever the ticker changes to update the wishlist button state
   useEffect(() => {
     // Async function to fetch user's wishlist from the API
     async function checkWishlist() {
       try {
-        // Fetch the user's wishlist from MongoDB via the API route
+        // Fetch the user's wishlist from MongoDB
         const res = await fetch("/api/wishlist");
         if (res.ok) {
-          // Extract the wishlist array from the response
           const { wishlist } = await res.json();
-          // Check if wishlist is a valid array and if it contains the current ticker
           // Array.isArray() prevents errors if wishlist is undefined or null
           // .some() returns true if any item in the array matches the current ticker
           setIsInWishlist(Array.isArray(wishlist) && wishlist.some((item: { ticker: string }) => item.ticker === ticker));
         }
       } catch (err) {
-        // Log any errors but don't break the UI - user can still try to add to wishlist
+        // console log errors without breaking the UI
         console.error(err);
       }
     }
@@ -317,9 +313,6 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
     async function fetchData() {
       try {
         setError(null);
-        setIsLoading(true);
-        setStockData(null);
-        setOverviewData(null);
         // Fetch both price data and overview data in parallel for better performance
         const [priceRes, overviewRes] = await Promise.all([
           fetch(`/api/price/${ticker}`),
@@ -341,26 +334,22 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
         }
       } catch {
         setError("Failed to load data");
-      } finally {
-        setIsLoading(false);
       }
     }
 
     fetchData();
   }, [ticker, isOpen]);
 
-  // Start Charles Yao - Function to add/remove stock from user's wishlist
-  // This function toggles the wishlist state by making API calls to add or remove stocks
+  // Start Charles Yao, add/remove stock from user's wishlist
+  // This function toggles the wishlist state, making API calls to add or remove stocks
   const toggleWishlist = async () => {
     try {
       if (isInWishlist) {
-        // REMOVE FROM WISHLIST FLOW
-        // Send DELETE request with ticker as query parameter to identify which stock to remove
+        //remove from wishlist
         const res = await fetch(`/api/wishlist?ticker=${ticker}`, {
           method: "DELETE",
         });
-
-        // If deletion was successful, update the local state to reflect removal
+        // If removal was successful, update the local state to reflect removal 
         if (res.ok) {
           setIsInWishlist(false);
         }
@@ -372,20 +361,20 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
           headers: { "Content-Type": "application/json" },
           // Include all stock information needed to display in the favorites page
           body: JSON.stringify({
-            ticker: ticker,                    // Stock symbol (e.g., "AAPL")
-            name: companyName || ticker,       // Company name, fallback to ticker if unavailable
-            region: region || "N/A",           // Stock market region (e.g., "United States")
-            currency: currency || "USD",       // Currency for price display
+            ticker: ticker,    //stock refering symbol
+            name: companyName || ticker, // company name
+            region: region || "N/A",     //stock region
+            currency: currency || "USD", 
           }),
         });
 
-        // If addition was successful, update the local state to reflect addition
+        //update the local state to reflect addition, if successful
         if (res.ok) {
           setIsInWishlist(true);
         }
       }
     } catch (err) {
-      // Log errors but don't crash the app - user can try again
+      // Log errors without breaking the UI
       console.error("Failed to toggle wishlist:", err);
     }
   };
@@ -396,16 +385,16 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
     if (error) {
       return <ErrorMessage>Error: {error}</ErrorMessage>;
     }
-
-    if (isLoading || !stockData) {
-      return <ErrorMessage>{isLoading ? "Loading..." : "No data available"}</ErrorMessage>;
+    //no data error
+    if (!stockData) {
+      return <ErrorMessage>No data available</ErrorMessage>;
     }
-
+    //only return when on the tab, and
     if (activeTab === "overview") {
       if (!overviewData) {
         return <ErrorMessage>Overview data not available</ErrorMessage>;
       }
-      // the overview page, copy paste style.
+      // the overview page, copy, paste styling with one polished box.
       return (
         <div className="space-y-6">
           {overviewData.description !== "N/A" && (
@@ -441,7 +430,8 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
                 <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
                   <div className="text-xs text-slate-400 mb-1">Market Cap</div>
                   <div className="text-xs font-medium text-white">
-                    {typeof overviewData.marketCap === "string"
+                      {/*we want to show with b so the bracket could fit and looks better*/}
+                      {typeof overviewData.marketCap === "string"
                       ? (parseFloat(overviewData.marketCap) / 1e9).toFixed(2) + "B": overviewData.marketCap}
                   </div>
                 </div>
@@ -471,7 +461,8 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
                 <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
                   <div className="text-xs text-slate-400 mb-1">Dividend Yield</div>
                   <div className="text-xs font-medium text-white">
-                    {(parseFloat(overviewData.dividendYield) * 100)}%
+                      {/*make it shows with percentage and 2 digits*/}
+                    {(parseFloat(overviewData.dividendYield) * 100).toFixed(2)}%
                   </div>
                 </div>
               )}
@@ -487,7 +478,7 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
                 <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
                   <div className="text-xs text-slate-400 mb-1">Beta</div>
                   <div className="text-xs font-medium text-white">
-                    {parseFloat(overviewData.beta)}
+                    {parseFloat(overviewData.beta).toFixed(2)}
                   </div>
                 </div>
               )}
@@ -500,7 +491,7 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
                 <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
                   <div className="text-xs text-slate-400 mb-1">Forward P/E</div>
                   <div className="text-xs font-medium text-white">
-                    {parseFloat(overviewData.forwardPE)}
+                    {parseFloat(overviewData.forwardPE).toFixed(2)}
                   </div>
                 </div>
               )}

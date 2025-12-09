@@ -5,8 +5,20 @@ import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { StockModal } from "@/components/StockModal";
 import {
-  PageWrapper,CloseButton,Title,Subtitle,ResultsWrapper,ResultsTitle,ResultsGrid,
-  Card,Symbol,Company,Message,Meta,Price,SearchResult
+  PageWrapper,
+  CloseButton,
+  Title,
+  Subtitle,
+  ResultsWrapper,
+  ResultsTitle,
+  ResultsGrid,
+  Card,
+  Symbol,
+  Company,
+  Message,
+  Meta,
+  Price,
+  SearchResult
 } from "@/app/search/page";
 
 export default function FavoritesPage() {
@@ -45,6 +57,7 @@ export default function FavoritesPage() {
         wishlist.map(async (item: { ticker: string; name: string; region: string; currency: string }) => {
           const priceRes = await fetch(`/api/price/${item.ticker}`);
           const data = await priceRes.json();
+          console.log(`Price data for ${item.ticker}:`, data); // Debug log
           return {
             symbol: item.ticker,
             name: item.name,
@@ -55,6 +68,7 @@ export default function FavoritesPage() {
         })
       );
 
+      console.log('Stocks with data:', stocksWithData); // Debug log
       setResults(stocksWithData);
     }
 
