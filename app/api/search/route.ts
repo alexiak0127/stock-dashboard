@@ -1,9 +1,6 @@
 //Ahemed's Code
 import { NextResponse } from "next/server";
-import {
-  searchSymbols,
-  getTimeSeriesDaily,
-} from "../../../utils/alpha-vantage";
+import { searchSymbols } from "../../../utils/alpha-vantage";
 
 type RawMatch = {
   [key: string]: string;
@@ -14,7 +11,6 @@ type SearchResult = {
   name: string;
   region: string;
   currency: string;
-  price: number | null;
 };
 
 export async function GET(req: Request) {
@@ -32,29 +28,15 @@ export async function GET(req: Request) {
 
     const topMatches = matches.slice(0, 5); //limit it to 5 
 
-    //for each match get relevant info
-    const results: SearchResult[] = await Promise.all(
-      topMatches.map(async (m) => {
-        const symbol = m["1. symbol"];
-        const name = m["2. name"];
-        const region = m["4. region"];
-        const currency = m["8. currency"];
+    //for each match get relevant info (price fetched separately when modal opens)
+    const results: SearchResult[] = topMatches.map((m) => {
+      const symbol = m["1. symbol"];
+      const name = m["2. name"];
+      const region = m["4. region"];
+      const currency = m["8. currency"];
 
-        let price: number | null = null;
-
-        try {
-          const ts = await getTimeSeriesDaily(symbol);
-          const series = ts["Time Series (Daily)"];
-          const latestDate = Object.keys(series)[0];
-          const latest = series[latestDate];
-          price = parseFloat(latest["4. close"]);
-        } catch {
-          price = null;
-        }
-
-        return { symbol, name, region, currency, price };
-      })
-    );
+      return { symbol, name, region, currency };
+    });
 
     return NextResponse.json({ results });
   } catch (error) {

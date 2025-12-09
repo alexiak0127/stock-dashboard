@@ -456,7 +456,7 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
                 <div className="rounded-lg bg-slate-900 bg-opacity-60 border border-slate-700 border-opacity-40 p-3">
                   <div className="text-xs text-slate-400 mb-1">Profit Margin</div>
                   <div className="text-xs font-medium text-white">
-                    {(parseFloat(overviewData.profitMargin) * 100)}%
+                    {(parseFloat(overviewData.profitMargin) * 100).toFixed(2)}%
                   </div>
                 </div>
               )}

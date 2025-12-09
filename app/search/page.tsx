@@ -12,7 +12,6 @@ export type SearchResult = {
   name: string;
   region: string;
   currency: string;
-  price: number | null;
 };
 
 export const PageWrapper = styled.main`
@@ -142,13 +141,6 @@ export const Meta = styled.span`
   color: #9ca3af;
 `;
 
-export const Price = styled.span`
-  margin-top: 0.3rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #d0e3cc;
-`;
-
 export const Message = styled.p`
   margin-top: 0.75rem;
   color: #9ca3af;
@@ -228,9 +220,6 @@ export default function SearchPage() {
                   <Meta>
                     {r.region} · {r.currency}
                   </Meta>
-                  <Price>
-                    {r.price != null ? `$${r.price.toFixed(2)}` : "Price N/A"}
-                  </Price>
                 </Card>
               ))}
             </ResultsGrid>
