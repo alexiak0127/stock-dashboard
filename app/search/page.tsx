@@ -1,5 +1,7 @@
+//Ahemed's code
+// This component provides a stock search interface, allowing users to search 
+// for companies or ticker symbols to view basic stock info, and open a modal 
 "use client";
-
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
