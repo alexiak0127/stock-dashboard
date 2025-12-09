@@ -1,10 +1,13 @@
 "use client";
+// Navigation bar component by Alexia Kim
+// Conditional rendering by Charles Yao
 
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import styled from "styled-components";
 
+// Sticky header
 const Header = styled.header`
   position: sticky;        
   top: 0;
@@ -13,6 +16,7 @@ const Header = styled.header`
   background-color: #020824;
 `;
 
+// Container for navbar content
 const Inner = styled.div`
   max-width: 1650px;
   margin: 0 auto;
@@ -22,12 +26,14 @@ const Inner = styled.div`
   justify-content: flex-start;
 `;
 
+// Logo container
 const Logo = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
 `;
 
+// Styled logo image
 const LogoImage = styled.img`
   height: 40px;
   width: 40px;
@@ -35,12 +41,15 @@ const LogoImage = styled.img`
   object-fit: cover;
 `;
 
+// Dashboard title text styling
 const Title = styled.span`
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: #e5e7eb;
 `;
 
+// Navigation links container
 const NavLinks = styled.nav`
   display: flex;
   align-items: center;
@@ -49,6 +58,7 @@ const NavLinks = styled.nav`
   margin-left: auto;
 `;
 
+// Individual navigation link
 const NavLink = styled(Link)`
   color: #e5e7eb;
   text-decoration: none;
@@ -59,6 +69,7 @@ const NavLink = styled(Link)`
   }
 `;
 
+// User profile avatar
 const UserAvatar = styled(Image)`
   border-radius: 50%;
   border: 2px solid #d0e3cc;
@@ -66,8 +77,8 @@ const UserAvatar = styled(Image)`
 `;
 
 export function Navbar() {
+  // Get current user session from NextAuth
   const { data: session } = useSession();
-
   return (
     <Header>
       <Inner>
@@ -78,7 +89,9 @@ export function Navbar() {
           </Logo>
         </Link>
         <NavLinks>
+          {/* Show user avatar if logged in, otherwise show Sign In button */}
           {session?.user ? (
+            // Logged in: Show user avatar that links to their profile page
             <Link href={`/user/${session.user.id || session.user.email}`}>
               <UserAvatar
                 src={session.user.image || "/default-avatar.png"}
@@ -88,14 +101,22 @@ export function Navbar() {
               />
             </Link>
           ) : (
+            // Not logged in: Show Sign In button that redirects to login page
             <Link 
               href="/login" 
               className="bg-white text-black py-2 px-5 rounded-lg font-semibold no-underline hover:brightness-105 transition-all"
             >Sign In</Link>
           )}
+          {/* Search link - visible to all users */}
           <NavLink href="/search">Search</NavLink>
           
-          {/*only show Favorites link when user is logged in, cHARLES*/}
+          {/* Only show Favorites link when user is logged in - Charles */}
+          {session?.user && (
+            <NavLink href={`/user/${session.user.id || session.user.email}/favorites`}>Favorites</NavLink>
+          )}
+          <NavLink href="/search">Search</NavLink>
+          
+          {/* only show Favorites link when user is logged in - Charles*/}
           {session?.user && (
             <NavLink href={`/user/${session.user.id || session.user.email}/favorites`}>Favorites</NavLink>
           )}
