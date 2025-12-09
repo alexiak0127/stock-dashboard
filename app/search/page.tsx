@@ -164,18 +164,22 @@ export default function SearchPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const trimmed = query.trim();
-    if (!trimmed) return;
+    if (!trimmed) return; //if empty search doesn't search
 
-    setLoading(true);
+    setLoading(true); //starts loading while searching
     setError(null);
-    setHasSearched(true);
+    setHasSearched(true); //sets that it is searching 
 
+    //searches using the keyword like pharma or ticker like AAPL
     try {
+      //makes the call to the API who then returns the result
       const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
       if (!res.ok) throw new Error("Request failed");
 
       const data = await res.json();
-      setResults(data.results ?? []);
+      setResults(data.results ?? []); //data is set to a list which is then
+                                   // mapped over when displayed to show all results
+
     } catch (err) {
       setError("Something went wrong.");
       setResults([]);

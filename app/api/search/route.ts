@@ -1,3 +1,4 @@
+//Ahemed's Code
 import { NextResponse } from "next/server";
 import {
   searchSymbols,
@@ -19,17 +20,19 @@ type SearchResult = {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("q") ?? "";
-
+//query would look like http://localhost:3000/api/search?q=AAPL
+//so the it would search for AAPL
   if (!query.trim()) {
     return NextResponse.json({ results: [] });
   }
 
   try {
-    const raw = await searchSymbols(query.trim());
+    const raw = await searchSymbols(query.trim());    //it woulds call the SYMBOL_SEARCH
     const matches: RawMatch[] = raw?.bestMatches ?? [];
 
-    const topMatches = matches.slice(0, 5);
+    const topMatches = matches.slice(0, 5); //limit it to 5 
 
+    //for each match get relevant info
     const results: SearchResult[] = await Promise.all(
       topMatches.map(async (m) => {
         const symbol = m["1. symbol"];
