@@ -1,5 +1,6 @@
 "use client";
-//Styled button for github login, with homemade login(), by Charles
+// Styled button for github login, with homemade login(), by Charles
+// Google login by Alexia
 import {logIn} from "@/lib/auth";
 import Image from "next/image";
 import githubLogo from "@/public/github.png";
@@ -14,7 +15,7 @@ export const AuthButton=()=>{
             >
                 <Image src={githubLogo} alt="Github Logo" width={29} height={29}/>
             </button>
-            
+        
             <button 
                 onClick={()=>logIn("google")} 
                 className="bg-white text-slate-900 flex w-200 h-[6vh] items-center justify-center gap-1 rounded-md font-semibold text-xl hover:brightness-95 transition-all"
