@@ -1,16 +1,16 @@
 "use server";
-//This part is done by Charles Yao
+//Charles Yao
+//A page meant for just the log page that would redirect to dynamic user page if they are logged in, basically modified MP-6 with style changes and functionality changes
 import { auth } from "@/auth";
 import { AuthButton } from "@/components/authButton";
 import { redirect } from "next/navigation";
-//A page meant for just the log page that would redirect if they are logged in, basically modified MP-6 with style changes and functionality changes
 export default async function LoginPage() {
   const session = await auth();
   
   if (session?.user) {
     redirect(`/user/${session.user.id}`);
   }
-  
+  {/*color shifting to background, fit main page*/}
   return (
     <main className="h-screen bg-slate-900 text-white flex flex-col">
       <div className="flex items-center justify-center flex-1">

@@ -285,21 +285,30 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
   // Track the currently hovered point on the price chart for tooltip display
   const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; price: number; date: string } | null>(null);
 
-  // Start of Charles check wishlist not to duplicate item
+  // Start of Charles - Check if current stock is already in user's wishlist to prevent duplicates
+  // This useEffect runs whenever the ticker changes to update the wishlist button state
   useEffect(() => {
+    // Async function to fetch user's wishlist from the API
     async function checkWishlist() {
       try {
+        // Fetch the user's wishlist from MongoDB via the API route
         const res = await fetch("/api/wishlist");
         if (res.ok) {
+          // Extract the wishlist array from the response
           const { wishlist } = await res.json();
-          setIsInWishlist(wishlist.some((item: { ticker: string }) => item.ticker === ticker));
+          // Check if wishlist is a valid array and if it contains the current ticker
+          // Array.isArray() prevents errors if wishlist is undefined or null
+          // .some() returns true if any item in the array matches the current ticker
+          setIsInWishlist(Array.isArray(wishlist) && wishlist.some((item: { ticker: string }) => item.ticker === ticker));
         }
       } catch (err) {
+        // Log any errors but don't break the UI - user can still try to add to wishlist
         console.error(err);
       }
     }
+    // Execute the check when the modal opens or ticker changes
     checkWishlist();
-  }, [ticker]);
+  }, [ticker]); // Re-run this effect whenever the ticker prop changes
   // end of charles for wishlist part functionality
   useEffect(() => {
     // Don't fetch data if modal is closed
@@ -340,36 +349,43 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
     fetchData();
   }, [ticker, isOpen]);
 
-  // start Charles Yao Function to add/remove stock in wishlist
+  // Start Charles Yao - Function to add/remove stock from user's wishlist
+  // This function toggles the wishlist state by making API calls to add or remove stocks
   const toggleWishlist = async () => {
     try {
       if (isInWishlist) {
-        //remove from wishlist
+        // REMOVE FROM WISHLIST FLOW
+        // Send DELETE request with ticker as query parameter to identify which stock to remove
         const res = await fetch(`/api/wishlist?ticker=${ticker}`, {
           method: "DELETE",
         });
-        
+
+        // If deletion was successful, update the local state to reflect removal
         if (res.ok) {
           setIsInWishlist(false);
         }
       } else {
-        // add to wishlist
+        // ADD TO WISHLIST FLOW
+        // Send POST request with stock details to save to user's MongoDB wishlist
         const res = await fetch("/api/wishlist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          // Include all stock information needed to display in the favorites page
           body: JSON.stringify({
-            ticker: ticker,
-            name: companyName || ticker,
-            region: region || "N/A",
-            currency: currency || "USD",
+            ticker: ticker,                    // Stock symbol (e.g., "AAPL")
+            name: companyName || ticker,       // Company name, fallback to ticker if unavailable
+            region: region || "N/A",           // Stock market region (e.g., "United States")
+            currency: currency || "USD",       // Currency for price display
           }),
         });
-        
+
+        // If addition was successful, update the local state to reflect addition
         if (res.ok) {
           setIsInWishlist(true);
         }
       }
     } catch (err) {
+      // Log errors but don't crash the app - user can try again
       console.error("Failed to toggle wishlist:", err);
     }
   };
