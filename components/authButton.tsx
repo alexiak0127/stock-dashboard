@@ -14,7 +14,7 @@ export const AuthButton=()=>{
                 onClick={()=>logIn("github")} 
                 className="bg-white text-slate-900 flex w-200 h-[6vh] items-center justify-center gap-2 rounded-md font-semibold text-xl hover:brightness-115 transition-all"
             >
-                <Image src={githubLogo} alt="Github Logo" width={40} height={40}/>
+                <Image src={githubLogo} alt="Github Logo" width={31} height={31}/>
             </button>
             {/* Google login button, with log in onClick */}
             <button 

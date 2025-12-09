@@ -33,8 +33,8 @@ const Logo = styled.div`
   gap: 0.75rem;
 `;
 
-// Styled logo image
-const LogoImage = styled.img`
+// Styled logo image - wrapping next/image for proper SSR
+const LogoImage = styled(Image)`
   height: 40px;
   width: 40px;
   border-radius: 12px;
@@ -85,12 +85,12 @@ export function Navbar() {
       <Inner>
         <Link href="/">
           <Logo>
-            <LogoImage src="/logo.png" alt="Market Dashboard logo" />
+            <LogoImage src="/logo.png" alt="Market Dashboard logo" width={50} height={50} />
             <Title>Market Dashboard</Title>
           </Logo>
         </Link>
         <NavLinks>
-          {/* Search link - visible to all users */}
+          {/* Search link visible to all users */}
           <NavLink href="/search">Search</NavLink>
 
           {/* Only show Favorites link when user is logged in - Charles */}
