@@ -278,6 +278,8 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
   // Track any errors that occur during data fetching
   const [error, setError] = useState<string | null>(null);
+  // Track loading state
+  const [isLoading, setIsLoading] = useState(false);
   // Track whether this stock is in the user's wishlist
   const [isInWishlist, setIsInWishlist] = useState(false);
   // Track the currently hovered point on the price chart for tooltip display
@@ -306,6 +308,9 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
     async function fetchData() {
       try {
         setError(null);
+        setIsLoading(true);
+        setStockData(null);
+        setOverviewData(null);
         // Fetch both price data and overview data in parallel for better performance
         const [priceRes, overviewRes] = await Promise.all([
           fetch(`/api/price/${ticker}`),
@@ -327,6 +332,8 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
         }
       } catch {
         setError("Failed to load data");
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -374,8 +381,8 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
       return <ErrorMessage>Error: {error}</ErrorMessage>;
     }
 
-    if (!stockData) {
-      return <ErrorMessage>No data available</ErrorMessage>;
+    if (isLoading || !stockData) {
+      return <ErrorMessage>{isLoading ? "Loading..." : "No data available"}</ErrorMessage>;
     }
 
     if (activeTab === "overview") {
