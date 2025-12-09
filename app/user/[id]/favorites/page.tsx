@@ -1,19 +1,20 @@
 "use client";
 //Charles Yao. Favorite page, might need modifications later to fit the mongodb calls.
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { StockModal } from "@/components/StockModal";
-import { 
-  PageWrapper, 
-  CloseButton, 
-  Title, 
-  Subtitle, 
-  ResultsWrapper, 
-  ResultsTitle, 
-  ResultsGrid, 
-  Card, 
-  Symbol, 
-  Company, 
+import {
+  PageWrapper,
+  CloseButton,
+  Title,
+  Subtitle,
+  ResultsWrapper,
+  ResultsTitle,
+  ResultsGrid,
+  Card,
+  Symbol,
+  Company,
   Message,
   Meta,
   Price,
@@ -21,9 +22,26 @@ import {
 } from "@/app/search/page";
 
 export default function FavoritesPage() {
-  const router = useRouter();//router is just for the close button, still a copy cat from the search page.
+  const router = useRouter();
+  const params = useParams();
+  const { data: session, status } = useSession();
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedStock, setSelectedStock] = useState<{ ticker: string; name: string; region?: string; currency?: string } | null>(null);
+
+  // Validate that the URL parameter matches the logged-in user
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session?.user) {
+      router.push("/login");
+      return;
+    }
+
+    // Redirect if URL doesn't match logged-in user's ID
+    if (params.id !== session.user.id) {
+      router.push(`/user/${session.user.id}/favorites`);
+    }
+  }, [session, status, params.id, router]);
 
     // THE USE EFFECT, is to take data from the mongodb and fetch API CALLS to get the data! its not static like others normal projects!
   useEffect(() => {

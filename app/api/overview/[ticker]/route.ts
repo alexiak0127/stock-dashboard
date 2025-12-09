@@ -32,8 +32,8 @@ export async function GET(
       bookValue: data.BookValue,
       beta: data.Beta,
     });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to fetch" });
+  } catch {
+    {/*log error*/}
+    return NextResponse.json({ error: "Failed to fetch overview data" });
   }
 }

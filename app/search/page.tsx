@@ -222,7 +222,7 @@ export default function SearchPage() {
             <ResultsTitle>Results</ResultsTitle>
             <ResultsGrid>
               {results.map((r) => (
-                <Card key={r.symbol} onClick={() => setSelectedStock({ ticker: r.symbol, name: r.name, region: r.region, currency: r.currency })}>
+                <Card key={r.symbol} onClick={() => setSelectedStock({ ticker: r.symbol, name: r.name })}>
                   <Symbol>{r.symbol}</Symbol>
                   <Company>{r.name}</Company>
                   <Meta>

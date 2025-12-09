@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import styled from "styled-components";
 
 // Main hero card container
@@ -108,6 +109,8 @@ const SecondaryButton = styled(Link)`
 `;
 
 export function Hero() {
+  const { data: session } = useSession();
+
   return (
     <HeroCard>
       <Heading>See the market at a glance</Heading>
@@ -118,7 +121,11 @@ export function Hero() {
       </Subtext>
       <ButtonRow>
         <PrimaryButton href="/search">Explore stocks</PrimaryButton>
-        <SecondaryButton href="/watchlist">View my watchlist</SecondaryButton>
+        {session?.user?.id ? (
+          <SecondaryButton href={`/user/${session.user.id}/favorites`}>View my watchlist</SecondaryButton>
+        ) : (
+          <SecondaryButton href="/login">View my watchlist</SecondaryButton>
+        )}
       </ButtonRow>
     </HeroCard>
   );

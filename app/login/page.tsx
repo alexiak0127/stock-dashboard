@@ -8,7 +8,7 @@ export default async function LoginPage() {
   const session = await auth();
   
   if (session?.user) {
-    redirect(`/user/${session.user.id || session.user.email}`);  //To be modified with DB if possible
+    redirect(`/user/${session.user.id}`);
   }
   
   return (

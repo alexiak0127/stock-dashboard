@@ -92,7 +92,7 @@ export function Navbar() {
           {/* Show user avatar if logged in, otherwise show Sign In button */}
           {session?.user ? (
             // Logged in: Show user avatar that links to their profile page
-            <Link href={`/user/${session.user.id || session.user.email}`}>
+            <Link href={`/user/${session.user.id}`}>
               <UserAvatar
                 src={session.user.image || "/default-avatar.png"}
                 alt={session.user.name || "User"}
@@ -112,7 +112,7 @@ export function Navbar() {
           
           {/* Only show Favorites link when user is logged in - Charles */}
           {session?.user && (
-            <NavLink href={`/user/${session.user.id || session.user.email}/favorites`}>Favorites</NavLink>
+            <NavLink href={`/user/${session.user.id}/favorites`}>Favorites</NavLink>
           )}
         </NavLinks>
       </Inner>
