@@ -1,4 +1,4 @@
-// Top Movers component by Alexia Kim
+// Top Movers by Alexia Kim
 // API endpoint to fetch top movers using Alpha Vantage's TOP_GAINERS_LOSERS function
 // https://www.alphavantage.co/documentation/ explains this function
 // This endpoint provides real market data for biggest movers without needing to query all stocks
