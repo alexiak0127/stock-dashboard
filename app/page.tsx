@@ -43,7 +43,9 @@ const fallbackMovers: TopMover[] = [
 
 export default function HomePage() {
   // store top movers data fetched from API
-  const [movers, setMovers] = useState<TopMover[]>(fallbackMovers);
+  const [movers, setMovers] = useState<TopMover[]>([]);
+  // Track loading state to show spinner instead of fallback stocks while data loads
+  const [isLoadingMovers, setIsLoadingMovers] = useState(true);
 
   // Fetch top movers data 
   useEffect(() => {
@@ -55,10 +57,14 @@ export default function HomePage() {
         // Use API data if successful
         if (data.movers && data.movers.length > 0) {
           setMovers(data.movers);
+        } else {
+          setMovers(fallbackMovers);
         }
       } catch (error) {
         console.error("Failed to fetch top movers:", error);
-        // Keep fallback data on error
+        setMovers(fallbackMovers);
+      } finally {
+        setIsLoadingMovers(false);
       }
     }
 
@@ -69,7 +75,7 @@ export default function HomePage() {
     <PageWrapper>
       <ContentWrapper>
         <Hero />
-        <TopMovers movers={movers} />
+        <TopMovers movers={movers} isLoading={isLoadingMovers} />
       </ContentWrapper>
       <Footer />
     </PageWrapper>

@@ -13,6 +13,7 @@ export type TopMover = {
 
 type Props = {
   movers: TopMover[];
+  isLoading?: boolean; // Show loading spinner when true
 };
 
 const Section = styled.section`
@@ -68,7 +69,21 @@ const Change = styled.span<{ $positive: boolean }>`
   color: ${({ $positive }) => ($positive ? "#86efac" : "#fca5a5")};
 `;
 
-export function TopMovers({ movers }: Props) {
+// Loading spinner shown while top movers data is being fetched
+const Spinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(148, 163, 184, 0.3);
+  border-top-color: #d0e3cc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
+export function TopMovers({ movers, isLoading }: Props) {
   // Track which stock ticker is selected to show in modal
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
 
@@ -76,7 +91,10 @@ export function TopMovers({ movers }: Props) {
     <Section>
       <Title>Top movers</Title>
       <Row>
-        {movers.map((m, idx) => {
+        {/* Show loading spinner while data loads, otherwise render stock cards */}
+        {isLoading ? (
+          <Spinner />
+        ) : movers.map((m, idx) => {
           // Determine color based on whether change is positive or negative
           const isPositive = m.change.trim().startsWith("+");
 
