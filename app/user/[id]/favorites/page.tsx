@@ -1,24 +1,12 @@
 "use client";
-//Charles Yao. Favorite page, might need modifications later to fit the mongodb calls.
+//Charles Yao. Favorite page that shows the user their saved watchlist from mongodb and fetches data from the stock API to show real time updated data.
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { StockModal } from "@/components/StockModal";
 import {
-  PageWrapper,
-  CloseButton,
-  Title,
-  Subtitle,
-  ResultsWrapper,
-  ResultsTitle,
-  ResultsGrid,
-  Card,
-  Symbol,
-  Company,
-  Message,
-  Meta,
-  Price,
-  SearchResult
+  PageWrapper,CloseButton,Title,Subtitle,ResultsWrapper,ResultsTitle,ResultsGrid,
+  Card,Symbol,Company,Message,Meta,Price,SearchResult
 } from "@/app/search/page";
 
 export default function FavoritesPage() {

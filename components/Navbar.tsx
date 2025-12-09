@@ -56,6 +56,7 @@ const NavLinks = styled.nav`
   gap: 2rem;
   font-size: 1.1rem;
   margin-left: auto;
+  flex-wrap: wrap;
 `;
 
 // Individual navigation link
@@ -89,6 +90,14 @@ export function Navbar() {
           </Logo>
         </Link>
         <NavLinks>
+          {/* Search link - visible to all users */}
+          <NavLink href="/search">Search</NavLink>
+
+          {/* Only show Favorites link when user is logged in - Charles */}
+          {session?.user && (
+            <NavLink href={`/user/${session.user.id}/favorites`}>Favorites</NavLink>
+          )}
+
           {/* Show user avatar if logged in, otherwise show Sign In button */}
           {session?.user ? (
             // Logged in: Show user avatar that links to their profile page
@@ -102,17 +111,10 @@ export function Navbar() {
             </Link>
           ) : (
             // Not logged in: Show Sign In button that redirects to login page
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="bg-white text-black py-2 px-5 rounded-lg font-semibold no-underline hover:brightness-105 transition-all"
             >Sign In</Link>
-          )}
-          {/* Search link - visible to all users */}
-          <NavLink href="/search">Search</NavLink>
-          
-          {/* Only show Favorites link when user is logged in - Charles */}
-          {session?.user && (
-            <NavLink href={`/user/${session.user.id}/favorites`}>Favorites</NavLink>
           )}
         </NavLinks>
       </Inner>

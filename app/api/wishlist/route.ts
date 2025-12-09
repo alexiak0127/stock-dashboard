@@ -28,7 +28,7 @@ export async function GET() {
       .find({ userEmail: session.user.email })
       .toArray();
 
-    // return the wishlist data as JSON
+    // json response to return the wishlist data
     return NextResponse.json({ wishlist });
   } catch {
     return NextResponse.json({ error: "Failed to fetch" });
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       currency: currency || "USD", // default USD if no currency
     });
 
-    // json response
+    // json response to indicate success or not
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to add" });
@@ -111,7 +111,7 @@ export async function DELETE(request: NextRequest) {
       ticker: ticker,
     });
 
-    // return response with success message, if successfully deleted
+    // json response to indicate success not
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to remove" });

@@ -9,13 +9,14 @@ import googleLogo from "@/public/google.png";
 export const AuthButton=()=>{
     return (
         <div className="flex flex-row gap-4 w-full">
+            {/* GitHub Login Button, with log in onClick */}
             <button 
                 onClick={()=>logIn("github")} 
                 className="bg-white text-slate-900 flex w-200 h-[6vh] items-center justify-center gap-2 rounded-md font-semibold text-xl hover:brightness-115 transition-all"
             >
-                <Image src={githubLogo} alt="Github Logo" width={29} height={29}/>
+                <Image src={githubLogo} alt="Github Logo" width={40} height={40}/>
             </button>
-        
+            {/* Google login button, with log in onClick */}
             <button 
                 onClick={()=>logIn("google")} 
                 className="bg-white text-slate-900 flex w-200 h-[6vh] items-center justify-center gap-1 rounded-md font-semibold text-xl hover:brightness-95 transition-all"
