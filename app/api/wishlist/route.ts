@@ -10,7 +10,7 @@ export async function GET() {
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" });
     }
-    const client = await clientPromise;
+    const client = await clientPromise; // from alexia's mongodb utils to establish connection.
     const db = client.db("stock_dashboard");
     
     // get wishlist
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existing) {
-      return NextResponse.json({ error: "Already in wishlist" });
+      return NextResponse.json({ error: "In wishlist" });
     }
     await db.collection("wishlists").insertOne({
       userEmail: session.user.email,
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to add" });
   }
 }
-
+//delete, similar with add.
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();

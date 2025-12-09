@@ -258,7 +258,7 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
   const [error, setError] = useState<string | null>(null);
   const [isInWishlist, setIsInWishlist] = useState(false);
 
-  //Start of Charles check wishlist not to duplicate item
+  //Start of Charles check wishlist not to duplicate item (all the styles here are to match the existing style of the team)
   useEffect(() => {
     async function checkWishlist() {
       try {

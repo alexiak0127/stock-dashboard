@@ -34,6 +34,6 @@ export async function GET(
     });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Failed to fetch" });
+    return NextResponse.json({ error: "Failed to fetch overview data" });
   }
 }
