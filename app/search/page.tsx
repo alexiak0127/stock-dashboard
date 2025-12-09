@@ -12,6 +12,7 @@ export type SearchResult = {
   name: string;
   region: string;
   currency: string;
+  price?: number | null;
 };
 
 export const PageWrapper = styled.main`
@@ -146,6 +147,13 @@ export const Message = styled.p`
   color: #9ca3af;
 `;
 
+export const Price = styled.span`
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #d0e3cc;
+  margin-top: 0.25rem;
+`;
+
 export default function SearchPage() {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -171,7 +179,25 @@ export default function SearchPage() {
       if (!res.ok) throw new Error("Request failed");
 
       const data = await res.json();
-      setResults(data.results ?? []); //data is set to a list which is then
+      const searchResults = data.results ?? [];
+
+      // Fetch price data for each result
+      const resultsWithPrices = await Promise.all(
+        searchResults.map(async (result: SearchResult) => {
+          try {
+            const priceRes = await fetch(`/api/price/${result.symbol}`);
+            const priceData = await priceRes.json();
+            return {
+              ...result,
+              price: priceData.latestClose || null
+            };
+          } catch {
+            return { ...result, price: null };
+          }
+        })
+      );
+
+      setResults(resultsWithPrices); //data is set to a list which is then
                                    // mapped over when displayed to show all results
 
     } catch (err) {
@@ -220,6 +246,9 @@ export default function SearchPage() {
                   <Meta>
                     {r.region} · {r.currency}
                   </Meta>
+                  <Price>
+                    {r.price != null ? `$${r.price.toFixed(2)}` : "Price N/A"}
+                  </Price>
                 </Card>
               ))}
             </ResultsGrid>
