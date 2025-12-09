@@ -1,7 +1,10 @@
+// Footer component by Alexia
+
 "use client";
 
 import styled from "styled-components";
 
+// Footer container
 const FooterWrapper = styled.footer`
   position: sticky;
   bottom: 0;
@@ -10,6 +13,7 @@ const FooterWrapper = styled.footer`
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
+// Inner content wrapper
 const Inner = styled.div`
   max-width: 960px;
   margin: 0 auto;
@@ -22,6 +26,7 @@ const Inner = styled.div`
 export function Footer() {
   return (
     <FooterWrapper>
+      {/* Copyright */}
       <Inner>&copy; {new Date().getFullYear()} Market Dashboard</Inner>
     </FooterWrapper>
   );

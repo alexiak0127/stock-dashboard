@@ -1,5 +1,6 @@
 "use client";
-//Done collectively by the group
+// Done collectively by the group
+// styling and modal logic by Alexia Kim
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IncomeStatement } from "./IncomeStatement";
@@ -249,16 +250,40 @@ const ChartContainer = styled.div`
   border: 1px solid rgba(148, 163, 184, 0.4);
   padding: 1rem 1.25rem;
   box-sizing: border-box;
+  position: relative;
+`;
+
+const ChartTooltip = styled.div`
+  position: absolute;
+  bottom: 100%;
+  transform: translateX(-50%);
+  background: rgba(2, 8, 36, 0.95);
+  border: 1px solid rgba(208, 227, 204, 0.5);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  pointer-events: none;
+  color: #ffffff;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 `;
 
 export function StockModal({ ticker, companyName, region, currency, isOpen, onClose }: StockModalProps) {
+  // Track which tab is currently active (Overview, Financials, or Price)
   const [activeTab, setActiveTab] = useState<"overview" | "financials" | "price">("overview");
+  // Store price data (current price, change, chart points) fetched from API
   const [stockData, setStockData] = useState<StockData | null>(null);
+  // Store company overview data (description, sector, financial metrics) from API
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
+  // Track any errors that occur during data fetching
   const [error, setError] = useState<string | null>(null);
+  // Track whether this stock is in the user's wishlist
   const [isInWishlist, setIsInWishlist] = useState(false);
+  // Track the currently hovered point on the price chart for tooltip display
+  const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; price: number; date: string } | null>(null);
 
-  //Start of Charles check wishlist not to duplicate item (all the styles here are to match the existing style of the team)
+  // Start of Charles check wishlist not to duplicate item
   useEffect(() => {
     async function checkWishlist() {
       try {
@@ -275,11 +300,13 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
   }, [ticker]);
   // end of charles for wishlist part functionality
   useEffect(() => {
+    // Don't fetch data if modal is closed
     if (!isOpen) return;
 
     async function fetchData() {
       try {
         setError(null);
+        // Fetch both price data and overview data in parallel for better performance
         const [priceRes, overviewRes] = await Promise.all([
           fetch(`/api/price/${ticker}`),
           fetch(`/api/overview/${ticker}`),
@@ -287,12 +314,14 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
         const priceData = await priceRes.json();
         const overviewDataRes = await overviewRes.json();
         
+        // Handle price data response
         if (priceData.error) {
           setError(priceData.error);
         } else {
           setStockData(priceData);
         }
     
+        // Handle overview data response
         if (!overviewDataRes.error) {
           setOverviewData(overviewDataRes);
         }
@@ -475,84 +504,146 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
       //end of charles on this part
     }
 
+    // start Raymond's financials tab
     if (activeTab === "financials") {
       return <IncomeStatement ticker={ticker} />;
     }
+    // end Raymond's financials tab
+    
+    // start of Alexia Kim's price tab
+    if (activeTab === "price") {
+      // Price tab - display current price, changes, and 60-day chart
+      const { latestClose, prevClose, diff, pct, high, low, latestDate, chartData } = stockData;
+      const positive = diff >= 0; // Determine if stock price went up (green) or down (red)
 
-    // Price tab
-    const { latestClose, prevClose, diff, pct, high, low, latestDate, chartData } = stockData;
-    const positive = diff >= 0;
+      // Prepare chart data: normalize prices to fit within SVG viewBox because SVG viewBox uses arbitrary coordinate system
+      const closes = chartData.map((p) => p.close); // Extract all closing prices
+      const minClose = Math.min(...closes); // Find lowest price for scaling
+      const maxClose = Math.max(...closes); // Find highest price for scaling
+      const range = maxClose - minClose || 1; // Calculate price range
 
-    // chart data
-    const closes = chartData.map((p) => p.close);
-    const minClose = Math.min(...closes);
-    const maxClose = Math.max(...closes);
-    const range = maxClose - minClose || 1;
+      // Convert each data point to SVG coordinates
+      const points = chartData
+        .map((point, index) => {
+          // X coordinate: spread data points evenly from 0 to 100
+          const x = (index / Math.max(chartData.length - 1, 1)) * 100;
+          // Y coordinate: normalize price to 0-1 range, then scale to fit chart height
+          const normalized = (point.close - minClose) / range;
+          // Flip Y axis because SVG has Y=0 at top, but we want high prices at top visually
+          const y = 90 - normalized * 70;
+          return `${x.toFixed(2)},${y.toFixed(2)}`;
+        })
+        .join(" "); // Join into space-separated string for SVG polyline
 
-    const points = chartData
-      .map((point, index) => {
-        const x = (index / Math.max(chartData.length - 1, 1)) * 100;
-        const normalized = (point.close - minClose) / range;
-        const y = 90 - normalized * 70;
-        return `${x.toFixed(2)},${y.toFixed(2)}`;
-      })
-      .join(" ");
+      return (
+        <>
+          <PriceRow>
+            <Price>${latestClose.toFixed(2)}</Price>
+            <ChangeText positive={positive}>
+              {positive ? "+" : ""}
+              {diff.toFixed(2)} ({positive ? "+" : ""}
+              {pct.toFixed(2)}%)
+            </ChangeText>
+            <DateText>Last updated: {latestDate}</DateText>
+          </PriceRow>
 
-    return (
-      <>
-        <PriceRow>
-          <Price>${latestClose.toFixed(2)}</Price>
-          <ChangeText positive={positive}>
-            {positive ? "+" : ""}
-            {diff.toFixed(2)} ({positive ? "+" : ""}
-            {pct.toFixed(2)}%)
-          </ChangeText>
-          <DateText>Last updated: {latestDate}</DateText>
-        </PriceRow>
+          <StatGrid>
+            <StatBox>
+              <StatLabel>Previous close</StatLabel>
+              <StatValue>${prevClose.toFixed(2)}</StatValue>
+            </StatBox>
+            <StatBox>
+              <StatLabel>Day high</StatLabel>
+              <StatValue>${high.toFixed(2)}</StatValue>
+            </StatBox>
+            <StatBox>
+              <StatLabel>Day low</StatLabel>
+              <StatValue>${low.toFixed(2)}</StatValue>
+            </StatBox>
+          </StatGrid>
 
-        <StatGrid>
-          <StatBox>
-            <StatLabel>Previous close</StatLabel>
-            <StatValue>${prevClose.toFixed(2)}</StatValue>
-          </StatBox>
-          <StatBox>
-            <StatLabel>Day high</StatLabel>
-            <StatValue>${high.toFixed(2)}</StatValue>
-          </StatBox>
-          <StatBox>
-            <StatLabel>Day low</StatLabel>
-            <StatValue>${low.toFixed(2)}</StatValue>
-          </StatBox>
-        </StatGrid>
-
-        <ChartTitle>Last 60 trading days</ChartTitle>
-        <ChartContainer>
-          <svg
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            width="100%"
-            height="100%"
-          >
-            <line
-              x1="0"
-              y1="90"
-              x2="100"
-              y2="90"
-              stroke="rgba(148,163,184,0.4)"
-              strokeWidth="0.3"
-            />
-            <polyline
-              fill="none"
-              stroke="#D0E3CC"
-              strokeWidth="1.5"
-              points={points}
-            />
-          </svg>
-        </ChartContainer>
-      </>
-    );
+          <ChartTitle>Last 60 trading days</ChartTitle>
+          <ChartContainer>
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              width="100%"
+              height="100%"
+              // Track mouse movement over the chart to show price at hovered position
+              // This provides interactive feedback to help users read exact values from the chart
+              onMouseMove={(e) => {
+                const svg = e.currentTarget;
+                const rect = svg.getBoundingClientRect();
+                // Convert mouse X position to percentage relative to SVG viewBox
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                // Map X percentage to the nearest data point index
+                const index = Math.round((x / 100) * (chartData.length - 1));
+                
+                // Validate index is within chart data bounds to prevent errors
+                if (index >= 0 && index < chartData.length) {
+                  const point = chartData[index];
+                  // Calculate Y position on the chart for this price
+                  const normalized = (point.close - minClose) / range;
+                  const y = 90 - normalized * 70;
+                  // Update hover state with position and price data for tooltip display
+                  setHoveredPoint({ x, y, price: point.close, date: point.date });
+                }
+              }}
+              // Clear hover state when mouse leaves the chart to hide tooltip
+              onMouseLeave={() => setHoveredPoint(null)}
+            >
+              {/* Horizontal baseline at bottom of chart */}
+              <line
+                x1="0"
+                y1="90"
+                x2="100"
+                y2="90"
+                stroke="rgba(148,163,184,0.4)"
+                strokeWidth="0.3"
+              />
+              {/* Main price line chart */}
+              <polyline
+                fill="none"
+                stroke="#D0E3CC"
+                strokeWidth="1.5"
+                points={points}
+              />
+              {/* Show hover indicator when hovering over chart */}
+              {hoveredPoint && (
+                <>
+                  {/* Blue dot at hovered position */}
+                  <circle
+                    cx={hoveredPoint.x}
+                    cy={hoveredPoint.y}
+                    r="1.2"
+                    fill="#3b82f6"
+                  />
+                  {/* Vertical dashed line at hovered position */}
+                  <line
+                    x1={hoveredPoint.x}
+                    y1="10"
+                    x2={hoveredPoint.x}
+                    y2="90"
+                    stroke="rgba(208,227,204,0.3)"
+                    strokeWidth="0.3"
+                    strokeDasharray="2,2"
+                  />
+                </>
+              )}
+            </svg>
+            {/* Tooltip showing price and date at hovered position */}
+            {hoveredPoint && (
+              <ChartTooltip style={{ left: `${hoveredPoint.x}%` }}>
+                <div style={{ fontWeight: 600 }}>${hoveredPoint.price.toFixed(2)}</div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>{hoveredPoint.date}</div>
+              </ChartTooltip>
+            )}
+          </ChartContainer>
+        </>
+      );
+    }
+    // end of Alexia Kim's price tab
   };
-
   return (
     <Overlay onClick={(e) => e.target === e.currentTarget && onClose()}>
       <ModalContainer>
