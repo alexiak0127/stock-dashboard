@@ -38,4 +38,11 @@ This is a full-stack app with Next.js for the frontend and backend API routes, M
   - Favorites saved to MongoDB
 
 
+### Important Notes:
+- **Free Tier Rate Limits**:
+  - **5 API calls per minute** per API key
+  - **100 API calls per day** per API key
+  - API responses can be slow
+
+
 Log in, look up a stock, check its price, overview, and financials, and save your favorites so they’re easy to find next time.
