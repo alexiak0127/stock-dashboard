@@ -37,4 +37,5 @@ This is a full-stack app with Next.js for the frontend and backend API routes, M
   - Each logged-in user has their own favorites list
   - Favorites saved to MongoDB
 
+
 Log in, look up a stock, check its price, overview, and financials, and save your favorites so they’re easy to find next time.
