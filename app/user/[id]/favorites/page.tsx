@@ -98,12 +98,7 @@ export default function FavoritesPage() {
               {/* Render all Card component with all the same component as search actually */}
               {results.map((r) => (
                 <Card
-                  key={r.symbol}
-                  onClick={() => setSelectedStock({
-                    ticker: r.symbol,
-                    name: r.name,
-                    region: r.region,
-                    currency: r.currency
+                  key={r.symbol} onClick={() => setSelectedStock({ticker: r.symbol, name: r.name, region: r.region, currency: r.currency
                   })}
                 >
                   <Symbol>{r.symbol}</Symbol>
