@@ -2,11 +2,9 @@
 
 Market Dashboard is a simple, real-time stock tracker where you can search tickers, see key financials, and keep a personal watchlist.
 
+This is a full-stack app with Next.js for the frontend and backend API routes, MongoDB for database, NextAuth for authentication, and Alpha Vantage API for real-time stock market data.
 
 Log in, look up a stock, check its price, overview, and financials, and save your favorites so they’re easy to find next time.
-
-
-This is a full-stack app with Next.js for the frontend and backend API routes, MongoDB for database, NextAuth for authentication, and Alpha Vantage API for real-time stock market data.
 
 ## Team Members
 - Alexia Kim
