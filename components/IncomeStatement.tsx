@@ -130,7 +130,8 @@ export function IncomeStatement({ ticker }: { ticker: string }) {
           <StyledTable> {/* styled table */}
             <thead>
               <tr>
-                <Th>Metric</Th> {/* styled table header (ex: used for metric dates) */}
+                {/* styled table header (ex: used for metric dates) */}
+                <Th>Metric</Th> 
                 {/* Map over reports to create table header cells for each fiscal date */}
                 {reports.map((r) => <Th key={r.fiscalDateEnding}>{r.fiscalDateEnding}</Th>)}
               </tr>
