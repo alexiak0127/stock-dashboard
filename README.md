@@ -4,6 +4,12 @@ Market Dashboard is a simple, real-time stock tracker where you can search ticke
 
 This is a full-stack app with Next.js for the frontend and backend API routes, MongoDB for database, NextAuth for authentication, and Alpha Vantage API for real-time stock market data.
 
+### Important Notes:
+- **Free Tier Rate Limits**:
+  - **5 API calls per minute** per API key
+  - **100 API calls per day** per API key
+  - The API is extremely slow so please give the pages a few seconds to properly populate the data or reload and wait a few seconds.
+
 ## Team Members
 - Alexia Kim
 - Charles Yao
@@ -36,13 +42,6 @@ This is a full-stack app with Next.js for the frontend and backend API routes, M
   - Add stocks to your personal watchlist for quick access
   - Each logged-in user has their own favorites list
   - Favorites saved to MongoDB
-
-
-### Important Notes:
-- **Free Tier Rate Limits**:
-  - **5 API calls per minute** per API key
-  - **100 API calls per day** per API key
-  - API responses can be slow
 
 
 Log in, look up a stock, check its price, overview, and financials, and save your favorites so they’re easy to find next time.
