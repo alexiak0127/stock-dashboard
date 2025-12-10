@@ -126,22 +126,18 @@ export function IncomeStatement({ ticker }: { ticker: string }) {
       {reports.length === 0 ? ( // if the reports length is 0, show a message
         <Message>No data available</Message>
       ) : (
-        <TableWrapper> {/* wrap the table in a wrapper */}
-          <StyledTable> {/* styled table */}
+        <TableWrapper>
+          <StyledTable>
             <thead>
               <tr>
-                {/* styled table header (ex: used for metric dates) */}
-                <Th>Metric</Th> 
-                {/* Map over reports to create table header cells for each fiscal date */}
+                <Th>Metric</Th>
                 {reports.map((r) => <Th key={r.fiscalDateEnding}>{r.fiscalDateEnding}</Th>)}
               </tr>
             </thead>
             <tbody>
-              {/* Map over METRICS array to create a table row for each financial metric */}
               {METRICS.map((m) => (
                 <tr key={m.key}>
                   <Td>{m.label}</Td>
-                  {/* Map over reports to create data cells showing the metric value for each fiscal period */}
                   {reports.map((r) => (
                     <Td key={`${m.key}-${r.fiscalDateEnding}`}>{formatNumber(r[m.key])}</Td>
                   ))}
