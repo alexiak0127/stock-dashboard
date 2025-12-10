@@ -197,10 +197,10 @@ const Price = styled.span`
   color: #ffffff;
 `;
 
-const ChangeText = styled.span<{ positive: boolean }>`
+const ChangeText = styled.span<{ $positive: boolean }>`
   font-size: 1rem;
   font-weight: 600;
-  color: ${({ positive }) => (positive ? "#86efac" : "#fca5a5")};
+  color: ${({ $positive }) => ($positive ? "#86efac" : "#fca5a5")};
 `;
 
 const DateText = styled.span`
@@ -553,7 +553,7 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
         <>
           <PriceRow>
             <Price>${latestClose.toFixed(2)}</Price>
-            <ChangeText positive={positive}>
+            <ChangeText $positive={positive}>
               {positive ? "+" : ""}
               {diff.toFixed(2)} ({positive ? "+" : ""}
               {pct.toFixed(2)}%)
