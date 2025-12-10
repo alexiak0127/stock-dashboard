@@ -8,35 +8,32 @@ export async function GET(
   { params }: { params: Promise<{ ticker: string }> }
 ) {
   try {
-    // Extract ticker symbol from URL parameters
     const { ticker } = await params;
     
     // Fetch daily time series data from Alpha Vantage API
     const data = await getTimeSeriesDaily(ticker.toUpperCase());
     const series = data["Time Series (Daily)"];
 
-    // Check if we received valid data
     if (!series) {
       return NextResponse.json({ error: "None available" });
     }
 
-    // Get all dates and sort them, newest to oldest
+    // all dates and sort them - newest to oldest
     const dates = Object.keys(series).sort().reverse();
     
-    // Get the most recent trading day's data
+    // most recent trading day's data
     const latest = series[dates[0]];
     
-    // Get the previous trading day's data for comparison
+    // previous trading day's data for comparison
     const prev = series[dates[1]];
 
-    // Parse closing prices as numbers
+    // closing prices as numbers
     const latestClose = parseFloat(latest["4. close"]);
     const prevClose = parseFloat(prev["4. close"]);
     
     // Calculate the price difference between latest and previous day
     const diff = latestClose - prevClose;
 
-    // Return all price data to the client
     return NextResponse.json({
       latestClose,           // Most recent closing price
       prevClose,             // Previous day's closing price
@@ -46,14 +43,13 @@ export async function GET(
       low: parseFloat(latest["3. low"]),    // Today's low
       latestDate: dates[0],  // Date of latest data
       
-      // Chart data: last 60 days of closing prices, oldest to newest
+      // Chart data - last 60 days of closing prices - oldest to newest
       chartData: dates.slice(0, 60).reverse().map((d) => ({
         date: d,
         close: parseFloat(series[d]["4. close"]),
       })),
     });
   } catch {
-    // Return error if API call fails
     return NextResponse.json({ error: "Failed to fetch" });
   }
 }

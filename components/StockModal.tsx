@@ -270,17 +270,17 @@ const ChartTooltip = styled.div`
 `;
 
 export function StockModal({ ticker, companyName, region, currency, isOpen, onClose }: StockModalProps) {
-  // Track which tab is currently active (Overview, Financials, or Price)
+  // Track active tab (Overview, Financials, or Price)
   const [activeTab, setActiveTab] = useState<"overview" | "financials" | "price">("overview");
-  // Store price data (current price, change, chart points) fetched from API
+  // Store price data
   const [stockData, setStockData] = useState<StockData | null>(null);
-  // Store company overview data (description, sector, financial metrics) from API
+  // Store company overview data
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
-  // Track any errors that occur during data fetching
+  // Track any errors
   const [error, setError] = useState<string | null>(null);
   // Track whether this stock is in the user's wishlist
   const [isInWishlist, setIsInWishlist] = useState(false);
-  // Track the currently hovered point on the price chart for tooltip display
+  // Track the currently hovered point on the price chart for tooltip
   const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; price: number; date: string } | null>(null);
 
   // Start of Charles duplicate wishlist check
@@ -313,7 +313,7 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
     async function fetchData() {
       try {
         setError(null);
-        // Fetch both price data and overview data in parallel for better performance
+        // Fetch both price data and overview data
         const [priceRes, overviewRes] = await Promise.all([
           fetch(`/api/price/${ticker}`),
           fetch(`/api/overview/${ticker}`),
@@ -526,17 +526,17 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
     
     // start of Alexia Kim's price tab
     if (activeTab === "price") {
-      // Price tab - display current price, changes, and 60-day chart
+      // Price tab - show current price, changes, and 60-day chart
       const { latestClose, prevClose, diff, pct, high, low, latestDate, chartData } = stockData;
-      const positive = diff >= 0; // Determine if stock price went up (green) or down (red)
+      const positive = diff >= 0; // Determine if stock price went up or down
 
-      // Prepare chart data: normalize prices to fit within SVG viewBox because SVG viewBox uses arbitrary coordinate system
+      // Prepare chart data - normalize prices to fit
       const closes = chartData.map((p) => p.close); // Extract all closing prices
-      const minClose = Math.min(...closes); // Find lowest price for scaling
-      const maxClose = Math.max(...closes); // Find highest price for scaling
+      const minClose = Math.min(...closes); // Find lowest price 
+      const maxClose = Math.max(...closes); // Find highest price
       const range = maxClose - minClose || 1; // Calculate price range
 
-      // Convert each data point to SVG coordinates
+      // Convert each data point
       const points = chartData
         .map((point, index) => {
           // X coordinate: spread data points evenly from 0 to 100
@@ -547,7 +547,7 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
           const y = 90 - normalized * 70;
           return `${x.toFixed(2)},${y.toFixed(2)}`;
         })
-        .join(" "); // Join into space-separated string for SVG polyline
+        .join(" ");
 
       return (
         <>
@@ -588,22 +588,21 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
               onMouseMove={(e) => {
                 const svg = e.currentTarget;
                 const rect = svg.getBoundingClientRect();
-                // Convert mouse X position to percentage relative to SVG viewBox
+                // Convert mouse X position to percentage
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 // Map X percentage to the nearest data point index
                 const index = Math.round((x / 100) * (chartData.length - 1));
                 
-                // Validate index is within chart data bounds to prevent errors
+                // Validate index is within chart data bounds
                 if (index >= 0 && index < chartData.length) {
                   const point = chartData[index];
                   // Calculate Y position on the chart for this price
                   const normalized = (point.close - minClose) / range;
                   const y = 90 - normalized * 70;
-                  // Update hover state with position and price data for tooltip display
+                  // Update hover state with position and price data for tooltip
                   setHoveredPoint({ x, y, price: point.close, date: point.date });
                 }
               }}
-              // Clear hover state when mouse leaves the chart to hide tooltip
               onMouseLeave={() => setHoveredPoint(null)}
             >
               {/* Horizontal baseline at bottom of chart */}
@@ -625,14 +624,12 @@ export function StockModal({ ticker, companyName, region, currency, isOpen, onCl
               {/* Show hover indicator when hovering over chart */}
               {hoveredPoint && (
                 <>
-                  {/* Blue dot at hovered position */}
                   <circle
                     cx={hoveredPoint.x}
                     cy={hoveredPoint.y}
                     r="1.2"
                     fill="#3b82f6"
                   />
-                  {/* Vertical dashed line at hovered position */}
                   <line
                     x1={hoveredPoint.x}
                     y1="10"

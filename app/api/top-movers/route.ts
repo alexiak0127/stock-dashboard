@@ -17,7 +17,6 @@ export async function GET() {
       throw new Error("ALPHA_VANTAGE_API_KEY is not set");
     }
 
-    // Try each API key
     for (const apiKey of API_KEYS) {
       try {
         // Use Alpha Vantage's TOP_GAINERS_LOSERS function to get real market movers
@@ -26,7 +25,7 @@ export async function GET() {
         const response = await fetch(url);
         const data = await response.json();
 
-        // Check for errors or rate limiting
+        // Check for errors
         if (data["Error Message"] || data["Note"]) {
           continue;
         }
@@ -36,7 +35,7 @@ export async function GET() {
         const topLosers = data.top_losers || [];
 
         if (topGainers.length === 0 && topLosers.length === 0) {
-          continue; // try next API key
+          continue;
         }
 
         // Combine gainers and losers, then sort by absolute change percentage
@@ -46,7 +45,7 @@ export async function GET() {
             return {
               ticker: stock.ticker,
               change: changeNum,
-              // Make sure positive changes have + sign for proper color coding
+              // Make sure positive changes have the plus sign for proper color coding
               changeFormatted: changeNum >= 0 ? `+${changeNum.toFixed(2)}%` : `${changeNum.toFixed(2)}%`
             };
           }),
@@ -73,11 +72,10 @@ export async function GET() {
         return NextResponse.json({ movers: topMovers });
       } catch (error) {
         console.error(`API key failed:`, error);
-        continue; // Try next API key
+        continue;
       }
     }
 
-    // If all API keys failed, error
     return NextResponse.json({ 
       error: "All API keys exhausted or rate limited" 
     }, { status: 503 });
