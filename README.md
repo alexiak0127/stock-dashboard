@@ -1,6 +1,8 @@
 # Market Dashboard
 
 Market Dashboard is a simple, real-time stock tracker where you can search tickers, see key financials, and keep a personal watchlist.
+
+
 Log in, look up a stock, check its price, overview, and financials, and save your favorites so they’re easy to find next time.
 
 ## Team Members
